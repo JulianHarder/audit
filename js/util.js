@@ -74,8 +74,12 @@ AUDIT.util = (function () {
       });
   }
 
-  /* escapen + lexifizieren in einem Schritt */
-  function rich(text) { return lexify(esc(text)); }
+  /* Lerntext aus den Datendateien: einfaches HTML (<b>, <br>) ist
+     erlaubt, [[Begriffe]] werden verlinkt.
+     ACHTUNG: Nur für eigene Inhalte verwenden. Alles, was der Nutzer
+     selbst eingegeben hat (z. B. Bausteinnamen), vorher mit esc()
+     behandeln. */
+  function rich(text) { return lexify(text); }
 
   function id(prefix) {
     AUDIT._idc = (AUDIT._idc || 0) + 1;

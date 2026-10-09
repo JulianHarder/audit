@@ -96,22 +96,22 @@ AUDIT.data.vorlage = {
 
     /* Datenflüsse */
     { from: 'kunde1',  to: 'shop',   art: 'datenfluss',
-      daten: ['name', 'adresse', 'email', 'bank'], zweck: 'Bestellabwicklung im Webshop', rechtsgrundlage: 'b' },
+      daten: ['name', 'adresse', 'email', 'bank'], zweck: 'bestellung', rechtsgrundlage: 'b', verschluesselt: true },
     { from: 'shop',    to: 'crm1',   art: 'datenfluss',
-      daten: ['name', 'adresse', 'email'], zweck: 'Kundenbetreuung und Vertrieb', rechtsgrundlage: 'f' },
+      daten: ['name', 'adresse', 'email'], zweck: 'kundenbetreuung', rechtsgrundlage: 'f' },
     { from: 'crm1',    to: 'news1',  art: 'datenfluss',
-      daten: ['name', 'email'], zweck: 'Werbung per Newsletter', rechtsgrundlage: '' },
+      daten: ['name', 'email'], zweck: 'werbung', rechtsgrundlage: '' },
     { from: 'bew1',    to: 'mail1',  art: 'datenfluss',
-      daten: ['name', 'email', 'bewerbung', 'gesundheit'], zweck: 'Bewerbungsverfahren', rechtsgrundlage: 'b' },
+      daten: ['name', 'email', 'bewerbung', 'gesundheit'], zweck: 'bewerbung', rechtsgrundlage: 'b' },
     { from: 'ma2',     to: 'hr1',    art: 'datenfluss',
-      daten: ['name', 'gesundheit', 'bank'], zweck: 'Personalverwaltung', rechtsgrundlage: 'c' },
+      daten: ['name', 'gesundheit', 'bank'], zweck: 'personal', rechtsgrundlage: 'c' },
     { from: 'ma1',     to: 'pc1',    art: 'datenfluss',
-      daten: [], zweck: 'Arbeit am Arbeitsplatz', rechtsgrundlage: 'c' },
+      daten: [], zweck: 'intern', rechtsgrundlage: 'c' },
     { from: 'hr1',     to: 'cloud1', art: 'datenfluss',
-      daten: ['name', 'gesundheit', 'bewerbung'], zweck: 'Archivierung der Personalakten', rechtsgrundlage: 'c' },
+      daten: ['name', 'gesundheit', 'bewerbung'], zweck: 'archiv', rechtsgrundlage: 'c' },
     { from: 'dl1',     to: 'cloud1', art: 'datenfluss',
-      daten: ['name', 'email'], zweck: 'Wartung und Support', rechtsgrundlage: 'f' },
+      daten: ['name', 'email'], zweck: 'wartung', rechtsgrundlage: 'f' },
     { from: 'ma1',     to: 'mail1',  art: 'datenfluss',
-      daten: ['email'], zweck: 'Kommunikation mit Kunden', rechtsgrundlage: 'f' }
+      daten: ['email'], zweck: 'intern', rechtsgrundlage: 'f', verschluesselt: true }
   ]
 };
