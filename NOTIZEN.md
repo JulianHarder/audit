@@ -60,6 +60,44 @@ DSGVO-Regeln, Betroffenenrechte, Rollen, Lexikon. Sie liefern heute die
   vergisst oder eine falsche mitnimmt, bekommt einen Hinweis und darf erneut –
   die Auswahl bleibt dabei stehen.
 
+### Tonalität – vier verschiedene Stimmen
+
+Jede Person spricht anders, und das ist didaktisch gewollt:
+
+| Person | Anrede | Sprache | Lernrolle |
+|---|---|---|---|
+| **Tim** | duzt | kumpelhaft, Kleinschreibung, Emojis, Tippfehler | **Du erklärst ihm** – wer erklären kann, hat verstanden |
+| **Sabrina** | duzt | entspannt, vollständige Sätze, trockener Humor | **Du denkst mit** – Kollegin auf Augenhöhe |
+| **Herr Olschewski** | duzt | förmlich und präzise, juristisch genau | **Du arbeitest einen Fall durch** |
+| **Frau Hagedorn** | siezt | durchgehend förmlich, fragt nach Kosten und Haftung | **Du berichtest nach oben** |
+
+Derselbe Stoff aus verschiedenen Richtungen bleibt besser hängen als dreimal
+dieselbe Abfrage. Wer die Tonalität ändert, sollte sie **pro Datei** konsistent
+halten – gemischte Anreden innerhalb einer Person wirken wie ein Fehler.
+
+### Rückmeldungen und Lösungshilfe
+
+* **Jede falsche Option hat ihren eigenen Erklärtext.** Es gibt keine generische
+  Rückmeldung wie „leider falsch" – die Person reagiert auf genau den Denkfehler,
+  der hinter der gewählten Antwort steckt.
+* Bei **Mehrfachauswahl** berechnet die Engine die Differenz und sagt, in welche
+  Richtung es danebenliegt: „eine gehört nicht dazu", „zwei fehlen noch", oder
+  beides. Der inhaltliche Hinweis (`antwortFalsch`) kommt erst ab dem zweiten
+  Versuch dazu, damit man zuerst selbst nachdenkt.
+* Nach **drei Fehlversuchen** – oder wenn nur noch eine Option übrig ist –
+  erscheint der Knopf **💡 Lösung zeigen**. Die Nachfrage davor ist absichtlich
+  variabel formuliert (`zufall()` in `js/chat.js`), damit sie bei mehrmaligem
+  Auftreten nicht mechanisch wirkt.
+
+### Gruppenchat mit mehreren Sprechern
+
+Im Kanal `#notfall` schreiben mehrere Personen. Jeder Schritt kann ein Feld
+`von` mit einem Sprecher-Schlüssel tragen; die Sprecher samt **Farbe** stehen in
+`data/kontakte.js` unter `AUDIT.data.sprecher`. Die Engine färbt Namen und
+linken Rand der Blase und gruppiert aufeinanderfolgende Nachrichten desselben
+Absenders. Ein unbekannter Schlüssel wird als Klartextname angezeigt – fällt
+also nicht hart aus, sondern nur farblos.
+
 ### Technik
 
 * Gleiche Grundlage wie vorher: kein Framework, keine Module, kein `fetch`,
@@ -113,6 +151,10 @@ Diese Punkte stimmen nach aktuellem Stand, ändern sich aber erfahrungsgemäß:
   die Kontakte durchgehen – nur das Lexikon hat ein Suchfeld.
 * **Kein Wiederholungsmodus.** Falsch beantwortete Fragen tauchen nicht später
   erneut auf; man kann ein Gespräch nur komplett wiederholen.
+* **Die Gespräche sind lang geworden** – vier bis sieben Minuten, einzelne mit
+  über zehn Entscheidungen. Das war ausdrücklich gewünscht, bedeutet aber: Man
+  kann ein Gespräch nicht sinnvoll in zwei Minuten zwischendurch machen. Ein
+  Zwischenspeichern mitten im Gespräch gibt es nicht.
 * **Die Reihenfolge innerhalb eines Kontakts ist nur eine Empfehlung.** Es gibt
   keine Sperre, man kann mit dem letzten Gespräch anfangen. Bei Tim bauen die
   Gespräche aufeinander auf.
@@ -141,3 +183,8 @@ Diese Punkte stimmen nach aktuellem Stand, ändern sich aber erfahrungsgemäß:
 * **Suchfeld über alle Gespräche**, das zum passenden Schritt springt.
 * **Themenübersicht**: eine Seite, die zeigt, welches Prüfungsthema in welchem
   Gespräch vorkommt – hilfreich beim gezielten Wiederholen.
+* **Fortsetzen mitten im Gespräch**: Bei Gesprächen mit zehn Entscheidungen wäre
+  ein Zwischenstand sinnvoll.
+* **Mehr Sprecher im Gruppenchat**: Die Sprecherliste enthält bereits Herrn
+  Brinkmann und den externen Dienstleister – daraus ließen sich Fälle zu
+  Auftragsverarbeitung und Dienstleisterkontrolle bauen.

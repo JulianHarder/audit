@@ -52,5 +52,22 @@ AUDIT.data.kontakte = [
 AUDIT.data.kontakteMap = {};
 AUDIT.data.kontakte.forEach(function (k) { AUDIT.data.kontakteMap[k.key] = k; });
 
+/* ---------------- Sprecher im Gruppenchat ----------------
+   Jeder Teilnehmer bekommt eine eigene Farbe, damit man im
+   Verlauf sofort sieht, wer schreibt. Der Schlüssel wird in den
+   Dialogen als "von" angegeben.                              */
+
+AUDIT.data.sprecher = [
+  { key: 'sabrina',    name: 'Sabrina (IT)',            farbe: '#38bdf8' },
+  { key: 'olschewski', name: 'Herr Olschewski (DSB)',   farbe: '#2dd4bf' },
+  { key: 'hagedorn',   name: 'Frau Hagedorn (GF)',      farbe: '#fbbf24' },
+  { key: 'tim',        name: 'Tim (Azubi)',             farbe: '#a78bfa' },
+  { key: 'luettmann',  name: 'Frau Lüttmann (Personal)', farbe: '#f472b6' },
+  { key: 'brinkmann',  name: 'Herr Brinkmann (Versand)', farbe: '#fb923c' },
+  { key: 'extern',     name: 'IT-Dienstleister Nord',   farbe: '#94a3b8' }
+];
+AUDIT.data.sprecherMap = {};
+AUDIT.data.sprecher.forEach(function (s) { AUDIT.data.sprecherMap[s.key] = s; });
+
 /* Alle Gespräche – die dialoge-*.js hängen sich hier an */
 AUDIT.data.dialoge = AUDIT.data.dialoge || [];

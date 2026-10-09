@@ -18,6 +18,9 @@ AUDIT.chat = (function () {
     });
   }
 
+  /* Damit nicht immer derselbe Satz kommt */
+  function zufall(liste) { return liste[Math.floor(Math.random() * liste.length)]; }
+
   function tippDauer(text) {
     return U.clamp(260 + String(text || '').length * 11, 380, 1200);
   }
@@ -154,8 +157,10 @@ AUDIT.chat = (function () {
       }, ms);
     }
 
-    function tippenZeigen() {
+    function tippenZeigen(von) {
+      var sp = sprecher(von);
       tippBlase = U.el('div', { class: 'tippen' }, [U.el('i'), U.el('i'), U.el('i')]);
+      if (sp.farbe) tippBlase.style.borderLeft = '3px solid ' + sp.farbe;
       verlauf.appendChild(tippBlase);
       scrollEnde();
     }
@@ -164,19 +169,38 @@ AUDIT.chat = (function () {
       tippBlase = null;
     }
 
+    /* Im Gruppenchat hat jeder Teilnehmer Name und Farbe.
+       'von' kann ein Sprecher-Schlüssel aus data/kontakte.js sein
+       oder einfach ein Klartextname. */
+    function sprecher(von) {
+      if (!von) return { name: kontakt.name, farbe: null };
+      var s = (AUDIT.data.sprecherMap || {})[von];
+      if (s) return s;
+      return { name: von, farbe: null };
+    }
+
     function blaseSie(html, extraKlasse, norm, von) {
       tippenWeg();
-      /* Im Gruppenchat kann jede Nachricht einen eigenen Absender haben */
-      var name = von || kontakt.name;
+      var sp = sprecher(von);
       /* Name nur über der ersten Blase einer Folge desselben Absenders */
       var letzte = verlauf.lastElementChild;
       var zeigeName = !(letzte && letzte.classList.contains('blase--sie') &&
-                        letzte.getAttribute('data-von') === name);
+                        letzte.getAttribute('data-von') === sp.name);
       var b = U.el('div', {
         class: 'blase blase--sie' + (extraKlasse ? ' ' + extraKlasse : ''),
-        data: { von: name }
+        data: { von: sp.name }
       });
-      if (zeigeName) b.appendChild(U.el('div', { class: 'blase__name', text: name }));
+      if (sp.farbe) {
+        b.style.borderLeft = '3px solid ' + sp.farbe;
+        b.style.borderBottomLeftRadius = '5px';
+      }
+      if (zeigeName) {
+        b.appendChild(U.el('div', {
+          class: 'blase__name',
+          text: sp.name,
+          style: sp.farbe ? { color: sp.farbe } : null
+        }));
+      }
       b.appendChild(U.el('div', { html: U.rich(html) }));
       if (norm) b.appendChild(U.el('div', { class: 'blase__norm', text: norm }));
       verlauf.appendChild(b);
@@ -200,7 +224,7 @@ AUDIT.chat = (function () {
       var s = dialog.schritte[i++];
 
       if (s.typ === 'nachricht') {
-        tippenZeigen();
+        tippenZeigen(s.von);
         warte(tippDauer(s.text), function () {
           blaseSie(s.text, null, s.norm, s.von);
           warte(260, weiter);
@@ -252,30 +276,74 @@ AUDIT.chat = (function () {
 
     function frage(s) {
       U.clear(antworten);
-      antworten.appendChild(U.el('div', { class: 'chat__frage', text: s.text || 'Deine Antwort' }));
+      var versuche = 0;
+      var kopf = U.el('div', { class: 'chat__frage', text: s.text || 'Deine Antwort' });
+      antworten.appendChild(kopf);
+      var knoepfe = [];
+
+      function loesungZeigen() {
+        var richtige = s.optionen.filter(function (o) { return o.richtig; })[0];
+        var idx = s.optionen.indexOf(richtige);
+        U.clear(antworten);
+        blaseIch('Zeig mir die Lösung.');
+        tippenZeigen(s.von);
+        warte(tippDauer(richtige.antwort), function () {
+          blaseSie('Kein Problem, das ist eine fiese Frage. Richtig ist: <b>' +
+            U.esc(richtige.text.replace(/<[^>]+>/g, '')) + '</b>', 'blase--loesung', null, s.von);
+          warte(500, function () {
+            blaseSie(richtige.antwort, 'blase--loesung', richtige.norm, s.von);
+            warte(420, weiter);
+          });
+        });
+      }
+
+      function loesungKnopfZeigen() {
+        if (antworten.querySelector('.loesung-knopf')) return;
+        var k = U.el('button', {
+          class: 'btn loesung-knopf', style: { marginTop: '4px' },
+          text: '💡 Lösung zeigen',
+          onclick: function () { if (aktiv()) loesungZeigen(); }
+        });
+        antworten.appendChild(k);
+        scrollEnde();
+      }
 
       s.optionen.forEach(function (o, nr) {
         var knopf = U.el('button', { class: 'antwort' }, [
           U.el('span', { class: 'antwort__nr', text: String(nr + 1) }),
           U.el('span', { html: U.rich(o.text) })
         ]);
+        knoepfe.push(knopf);
         knopf.addEventListener('click', function () {
           if (!aktiv() || knopf.classList.contains('is-falsch')) return;
           blaseIch(o.text);
 
           if (o.richtig) {
             U.clear(antworten);
-            tippenZeigen();
+            tippenZeigen(s.von);
             warte(tippDauer(o.antwort), function () {
               blaseSie(o.antwort, 'blase--richtig', o.norm, s.von);
               warte(380, weiter);
             });
           } else {
+            versuche++;
             knopf.classList.add('is-falsch');
             knopf.setAttribute('disabled', 'disabled');
-            tippenZeigen();
+            tippenZeigen(s.von);
             warte(tippDauer(o.antwort), function () {
               blaseSie(o.antwort, 'blase--falsch', o.norm, s.von);
+              /* Wie viele Möglichkeiten bleiben noch? */
+              var offen = knoepfe.filter(function (k) { return !k.classList.contains('is-falsch'); }).length;
+              if (versuche >= 3 || offen <= 1) {
+                warte(500, function () {
+                  blaseSie(zufall([
+                    'Soll ich dir die Lösung zeigen?',
+                    'Wenn du magst, zeige ich dir die Antwort.',
+                    'Wir können das auch gemeinsam auflösen.'
+                  ]), null, null, s.von);
+                  loesungKnopfZeigen();
+                });
+              }
               scrollEnde();
             });
           }
@@ -291,13 +359,17 @@ AUDIT.chat = (function () {
       U.clear(antworten);
       antworten.appendChild(U.el('div', { class: 'chat__frage', text: s.text || 'Mehrere sind richtig' }));
       var gewaehlt = {};
+      var versuche = 0;
+      var knoepfe = [];
 
       s.optionen.forEach(function (o, nr) {
         var knopf = U.el('button', { class: 'antwort' }, [
           U.el('span', { class: 'antwort__nr', text: '☐' }),
           U.el('span', { html: U.rich(o.text) })
         ]);
+        knoepfe.push(knopf);
         knopf.addEventListener('click', function () {
+          if (!aktiv()) return;
           gewaehlt[nr] = !gewaehlt[nr];
           knopf.classList.toggle('is-gewaehlt', !!gewaehlt[nr]);
           knopf.firstChild.textContent = gewaehlt[nr] ? '☑' : '☐';
@@ -305,31 +377,80 @@ AUDIT.chat = (function () {
         antworten.appendChild(knopf);
       });
 
+      function loesungZeigen() {
+        U.clear(antworten);
+        blaseIch('Zeig mir die Lösung.');
+        var richtigeTexte = s.optionen.filter(function (o) { return o.richtig; })
+          .map(function (o) { return o.text.replace(/<[^>]+>/g, ''); });
+        tippenZeigen(s.von);
+        warte(700, function () {
+          blaseSie('Richtig wären gewesen: <b>' +
+            richtigeTexte.map(U.esc).join('</b>, <b>') + '</b>', 'blase--loesung', null, s.von);
+          warte(500, function () {
+            blaseSie(s.antwortRichtig, 'blase--loesung', s.norm, s.von);
+            warte(420, weiter);
+          });
+        });
+      }
+
       var pruefen = U.el('button', { class: 'btn btn--primary', text: 'Antwort abgeben' });
       pruefen.addEventListener('click', function () {
         if (!aktiv()) return;
-        var richtig = true;
+        var fehlend = 0, zuviel = 0;
         s.optionen.forEach(function (o, nr) {
-          if (!!o.richtig !== !!gewaehlt[nr]) richtig = false;
+          if (o.richtig && !gewaehlt[nr]) fehlend++;
+          if (!o.richtig && gewaehlt[nr]) zuviel++;
         });
         var gewaehlteTexte = s.optionen.filter(function (o, nr) { return gewaehlt[nr]; })
           .map(function (o) { return o.text; });
         blaseIch(gewaehlteTexte.length ? gewaehlteTexte.join(' · ') : '(nichts ausgewählt)');
 
-        if (richtig) {
+        if (!fehlend && !zuviel) {
           U.clear(antworten);
-          tippenZeigen();
+          tippenZeigen(s.von);
           warte(tippDauer(s.antwortRichtig), function () {
             blaseSie(s.antwortRichtig, 'blase--richtig', s.norm, s.von);
             warte(380, weiter);
           });
-        } else {
-          tippenZeigen();
-          warte(tippDauer(s.antwortFalsch), function () {
-            blaseSie(s.antwortFalsch || 'Noch nicht ganz – schau es dir noch einmal an.', 'blase--falsch', null, s.von);
-            scrollEnde();
-          });
+          return;
         }
+
+        /* Rückmeldung, die sagt, in welche Richtung es danebenliegt */
+        versuche++;
+        var hinweis;
+        if (fehlend && zuviel) {
+          hinweis = 'Noch nicht ganz: <b>' + (zuviel === 1 ? 'eine Antwort gehört nicht dazu' : zuviel + ' Antworten gehören nicht dazu') +
+            '</b>, und <b>' + (fehlend === 1 ? 'eine fehlt' : fehlend + ' fehlen') + '</b>.';
+        } else if (zuviel) {
+          hinweis = zuviel === 1
+            ? 'Fast. <b>Eine</b> deiner Antworten gehört nicht dazu – die anderen stimmen.'
+            : 'Fast. <b>' + zuviel + '</b> deiner Antworten gehören nicht dazu.';
+        } else {
+          hinweis = fehlend === 1
+            ? 'Alles richtig, was du angekreuzt hast – aber <b>eine</b> fehlt noch.'
+            : 'Alles richtig, was du angekreuzt hast – aber <b>' + fehlend + '</b> fehlen noch.';
+        }
+
+        tippenZeigen(s.von);
+        warte(tippDauer(hinweis), function () {
+          blaseSie(hinweis, 'blase--falsch', null, s.von);
+          if (versuche >= 3) {
+            warte(500, function () {
+              blaseSie(s.antwortFalsch, null, null, s.von);
+              if (!antworten.querySelector('.loesung-knopf')) {
+                antworten.appendChild(U.el('button', {
+                  class: 'btn loesung-knopf', style: { marginTop: '4px' },
+                  text: '💡 Lösung zeigen',
+                  onclick: function () { if (aktiv()) loesungZeigen(); }
+                }));
+              }
+              scrollEnde();
+            });
+          } else if (versuche === 2) {
+            warte(450, function () { blaseSie(s.antwortFalsch, null, null, s.von); });
+          }
+          scrollEnde();
+        });
       });
       antworten.appendChild(pruefen);
       scrollEnde();

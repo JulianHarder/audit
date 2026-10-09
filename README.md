@@ -30,16 +30,21 @@ Dann `http://localhost:8000` aufrufen. Getestet in Chrome, Edge und Firefox.
 
 ## Die Gesprächspartner
 
-| Kontakt | Rolle | Themen | Gespräche |
-|---|---|---|---|
-| **Sabrina Köster** | IT-Abteilung | Schadsoftware, Schutzmaßnahmen, Schutzziele im Alltag | 6 |
-| **Herr Olschewski** | Datenschutzbeauftragter | DSGVO, Betroffenenrechte, Pseudonymisierung, Privacy by Design | 7 |
-| **Frau Hagedorn** | Geschäftsführung | Schutzziele, Schutzbedarf, DSB und ISB, Haftung | 5 |
-| **Tim** | Azubi, 2. Lehrjahr | Zutritt/Zugang/Zugriff, TOMs, Begriffe, Phishing | 5 |
-| **#notfall** | Gruppenchat | Datenpanne, Ransomware, Serverausfall | 3 |
+| Kontakt | Anrede | Ton | Themen | Gespräche |
+|---|---|---|---|---|
+| **Sabrina Köster** | duzt dich | entspannt, aber sachlich | Schadsoftware, Schutzmaßnahmen, Netzwerkschutz, Homeoffice | 8 |
+| **Herr Olschewski** | duzt dich | förmlich und präzise | DSGVO, Betroffenenrechte, Pseudonymisierung, Auftragsverarbeitung, Nachweispflichten | 9 |
+| **Frau Hagedorn** | siezt dich | durchgehend förmlich | Schutzziele, Schutzbedarf, DSB und ISB, Haftung, Compliance | 6 |
+| **Tim** | duzt dich | kumpelhaft, Emojis, Kleinschreibung | Zutritt/Zugang/Zugriff, TOMs, Begriffe, Betroffenenrechte, Phishing | 5 |
+| **#notfall** | Gruppenchat | mehrere Sprecher, farblich getrennt | Datenpanne, Ransomware, Serverausfall, Tailgating, CEO-Fraud | 5 |
 
-Zusammen **26 Gespräche** mit rund **90 Entscheidungen**. Jedes dauert zwei bis
-vier Minuten.
+Zusammen **33 Gespräche** mit **210 Entscheidungen**. Jedes dauert vier bis
+sieben Minuten.
+
+Jede Person hat eine eigene Sprechweise – das ist Absicht: Bei Tim **erklärst du**,
+bei Frau Hagedorn **berichtest du**, bei Herrn Olschewski **arbeitest du einen Fall
+durch**. Derselbe Stoff aus drei Richtungen bleibt besser hängen als dreimal
+dieselbe Abfrage.
 
 ---
 
@@ -50,6 +55,11 @@ vier Minuten.
 * Antwort per Klick oder mit den **Tasten 1–9**
 * Falsch gewählt? Die Begründung erscheint, die Option wird ausgegraut, du
   wählst direkt neu. Kein Punktestand, kein Scheitern
+* Bei Mehrfachauswahl sagt die Rückmeldung, **in welche Richtung** es
+  danebenliegt („eine gehört nicht dazu", „zwei fehlen noch") – nicht nur
+  „falsch"
+* Nach **drei Fehlversuchen** erscheint ein Knopf **💡 Lösung zeigen**: Die
+  richtige Antwort wird genannt und erklärt, dann geht es weiter
 * Fachbegriffe sind <u>markiert</u> und öffnen das **Lexikon** (📖 oben rechts, 131 Einträge mit Suche)
 * Jedes Gespräch endet mit einem Merksatz → landet automatisch im **Spickzettel**
   (📌 oben rechts, nach Themen sortiert, druckbar)
@@ -71,8 +81,13 @@ Die Gespräche decken die **25 Aufgaben der Probeklausur Modul IV** ab:
 | F – Praxisfälle (22–25) | #notfall: Mail an den Falschen, Ransomware, Serverausfall · Sabrina: USB-Stick, gemeinsames Passwort · Hagedorn: Fall ohne Backups |
 
 Ergänzt um Themen, die prüfungsrelevant sind, aber in dieser Probeklausur
-fehlten: Phishing und Social Engineering, Rootkit, Spyware, Keylogger, Botnetz,
-Hoax, Auftragsverarbeitung, Drittlandtransfer, alle acht Kontrollarten der TOMs.
+fehlten: Phishing, Spear-Phishing, CEO-Fraud und Social Engineering, Rootkit,
+Spyware, Keylogger, Botnetz, Hoax, Auftragsverarbeitung und Drittlandtransfer,
+alle acht Kontrollarten der TOMs, Verzeichnis von Verarbeitungstätigkeiten,
+Datenschutz-Folgenabschätzung, Rechenschaftspflicht, Bußgelder, Compliance und
+IT-Compliance (GoBD, Lizenzrecht, TDDDG, Hinweisgeberschutz), Homeoffice und
+mobile Arbeit, Schatten-IT, Firewall und DMZ, Tailgating, Authentifizierungs-
+faktoren, Datenschutz gegenüber Informationssicherheit.
 
 **Zu den Schutzbedarfs-Stufen:** Die Klausur arbeitet mit *niedrig – mittel –
 hoch*, der BSI-Standard 200-2 mit *normal – hoch – sehr hoch*. Beide Skalen
@@ -94,7 +109,7 @@ audit/
 │   ├── dialoge-dsb.js          Datenschutzrecht
 │   ├── dialoge-chefin.js       Schutzziele, Schutzbedarf, Rollen
 │   ├── dialoge-tim.js          Begriffe, Kontrollarten, Betroffenenrechte
-│   ├── dialoge-notfall.js      Gruppenchat: Ernstfälle
+│   ├── dialoge-notfall.js      Gruppenchat: Ernstfälle (mehrere Sprecher)
 │   ├── lexikon.js              131 Kurzdefinitionen
 │   ├── schadsoftware.js        \
 │   ├── massnahmen.js            |  Nachschlagewerke: liefern die
@@ -145,7 +160,10 @@ AUDIT.data.dialoge.push({
 (alle richtigen ankreuzen) · `karte` (Tabelle aus einer `data/`-Datei über
 `quelle` und `keys`, oder freies `html`) · `merk`.
 
-Im Gruppenchat bekommt jeder Schritt zusätzlich `von: 'Sabrina (IT)'`.
+Im Gruppenchat bekommt jeder Schritt zusätzlich einen Sprecher-Schlüssel,
+zum Beispiel `von: 'sabrina'`. Die Sprecher samt Farbe stehen in
+`data/kontakte.js` unter `AUDIT.data.sprecher` – so ist im Verlauf auf einen
+Blick erkennbar, wer schreibt.
 
 In allen Texten wird `[[Begriff]]` zu einem Lexikon-Link, einfaches HTML wie
 `<b>` ist erlaubt.

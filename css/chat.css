@@ -306,3 +306,18 @@
   }
   .antwort__nr { font-size: 13px; }
 }
+
+/* Lösung, die nach mehreren Fehlversuchen gezeigt wird */
+.blase--loesung {
+  border-color: rgba(251, 191, 36, .5);
+  background: rgba(251, 191, 36, .07);
+}
+.loesung-knopf {
+  border-color: rgba(251, 191, 36, .5);
+  color: #fde6bf;
+  background: rgba(251, 191, 36, .1);
+}
+.loesung-knopf:hover { background: rgba(251, 191, 36, .18); border-color: var(--warn); }
+
+/* Gruppenchat: Namen etwas kräftiger, damit die Farbe trägt */
+.blase--sie .blase__name { font-weight: 600; }
