@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AUDIT – Firma bauen, angreifen, absichern</title>
+<meta name="description" content="Interaktive Lernwerkstatt zu IT-Sicherheit, Datenschutz und Compliance für die IHK-Prüfung Fachinformatiker.">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/canvas.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav__logo">
+    <b>AUDIT</b>
+    <span>IT-Sicherheit &amp; Datenschutz</span>
+  </div>
+  <div class="nav__stations" id="navStations"></div>
+  <button class="btn btn--ghost" id="btnLexikon" title="Lexikon öffnen (Esc schließt)">📖 Lexikon</button>
+</nav>
+
+<main class="app" id="app"></main>
+
+<!-- ===== Daten (zuerst, reine Inhalte) ===== -->
+<script src="data/bausteine.js"></script>
+<script src="data/schutzziele.js"></script>
+<script src="data/vorlage.js"></script>
+<script src="data/lexikon.js"></script>
+
+<!-- ===== Grundlagen ===== -->
+<script src="js/util.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/dnd.js"></script>
+<script src="js/firma.js"></script>
+<script src="js/canvas.js"></script>
+<script src="js/palette.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/lexikon.js"></script>
+
+<!-- ===== Stationen (Reihenfolge = Reihenfolge in der Navigation) ===== -->
+<script src="js/schutzbedarf.js"></script>
+
+<!-- ===== Start ===== -->
+<script src="js/main.js"></script>
+</body>
+</html>
