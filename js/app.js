@@ -57,7 +57,7 @@ AUDIT.app = (function () {
 
       var karte = U.el('button', {
         class: 'kontakt' + (dial.length && fert === dial.length ? ' is-fertig' : ''),
-        onclick: function () { if (dial.length) zeigeKontakt(k.key); }
+        onclick: function () { if (dial.length) zeige('kontakt', k.key); }
       });
       karte.appendChild(U.el('div', { class: 'kontakt__bild', text: k.bild }));
 
@@ -89,8 +89,8 @@ AUDIT.app = (function () {
   function zeigeKontakt(key) {
     ansicht = 'kontakt';
     var k = AUDIT.data.kontakteMap[key];
-    if (!k) { zeigeListe(); return; }
-    setzeKopf(k.bild + ' ' + U.esc(k.name), k.rolle, zeigeListe);
+    if (!k) { zeige('liste'); return; }   /* unbekannter Kontakt in der Adresse */
+    setzeKopf(k.bild + ' ' + U.esc(k.name), k.rolle, function () { zeige('liste'); });
     U.clear(seite);
 
     seite.appendChild(U.el('p', { class: 'lead', text: k.vorstellung }));
@@ -100,7 +100,7 @@ AUDIT.app = (function () {
       var fertig = istErledigt(d.id);
       var zeile = U.el('button', {
         class: 'gespraech' + (fertig ? ' is-fertig' : ''),
-        onclick: function () { zeigeChat(d.id); }
+        onclick: function () { zeige('chat', d.id); }
       });
       zeile.appendChild(U.el('div', { class: 'gespraech__nr', text: fertig ? '✓' : String(nr + 1) }));
       var mitte = U.el('div', { class: 'gespraech__mitte' });
@@ -122,9 +122,9 @@ AUDIT.app = (function () {
   function zeigeChat(id) {
     ansicht = 'chat';
     var d = AUDIT.data.dialoge.filter(function (x) { return x.id === id; })[0];
-    if (!d) { zeigeListe(); return; }
+    if (!d) { zeige('liste'); return; }   /* unbekanntes Gespräch in der Adresse */
     var k = AUDIT.data.kontakteMap[d.kontakt] || {};
-    setzeKopf(k.bild + ' ' + U.esc(k.name), d.titel, function () { zeigeKontakt(d.kontakt); });
+    setzeKopf(k.bild + ' ' + U.esc(k.name), d.titel, function () { zeige('kontakt', d.kontakt); });
     U.clear(seite);
 
     AUDIT.chat.starte(d, seite, function (endeBox) {
@@ -137,16 +137,16 @@ AUDIT.app = (function () {
       if (naechste) {
         endeBox.appendChild(U.el('button', {
           class: 'btn btn--primary', text: 'Nächstes Gespräch: ' + naechste.titel,
-          onclick: function () { zeigeChat(naechste.id); }
+          onclick: function () { zeige('chat', naechste.id); }
         }));
       }
       endeBox.appendChild(U.el('button', {
         class: 'btn', text: 'Zurück zu ' + (k.name || 'den Gesprächen'),
-        onclick: function () { zeigeKontakt(d.kontakt); }
+        onclick: function () { zeige('kontakt', d.kontakt); }
       }));
       endeBox.appendChild(U.el('button', {
         class: 'btn btn--ghost', text: 'Noch einmal von vorn',
-        onclick: function () { zeigeChat(d.id); }
+        onclick: function () { zeichne('chat', d.id); }
       }));
     });
   }
@@ -155,19 +155,65 @@ AUDIT.app = (function () {
 
   function zeigeZettel() {
     ansicht = 'zettel';
-    setzeKopf('📌 Spickzettel', 'deine gesammelten Merksätze', zeigeListe);
+    setzeKopf('📌 Spickzettel', 'deine gesammelten Merksätze', function () { zeige('liste'); });
     U.clear(seite);
     AUDIT.spickzettel.zeichne(seite);
   }
 
-  /* ---------- Steuerung ---------- */
+  /* ---------- Adresszeile und Zurück-Taste ----------
+     Die Ansicht steht in der Adresszeile (#/k/sabrina, #/c/sab-01).
+     Dadurch funktioniert die Zurück-Taste des Browsers – auf dem
+     Handy die natürliche Geste – und ein Gespräch lässt sich direkt
+     verlinken. Ein Hash aus einer früheren Fassung (etwa #angriff
+     aus der alten Stationsansicht) wird beim Start entfernt. */
 
-  function zeige(was, param) {
+  function hashFuer(was, param) {
+    if (was === 'kontakt') return '#/k/' + param;
+    if (was === 'chat') return '#/c/' + param;
+    if (was === 'zettel') return '#/zettel';
+    return '#/';
+  }
+
+  /* Liest die Adresszeile. null = unbekannte Route. */
+  function routeLesen() {
+    var h = (window.location.hash || '').replace(/^#\/?/, '');
+    var teile = h.split('/').filter(Boolean);
+    if (!teile.length) return { was: 'liste' };
+    if (teile[0] === 'k' && teile[1]) return { was: 'kontakt', param: teile[1] };
+    if (teile[0] === 'c' && teile[1]) return { was: 'chat', param: teile[1] };
+    if (teile[0] === 'zettel') return { was: 'zettel' };
+    return null;
+  }
+
+  /* Nur zeichnen, ohne die Adresszeile anzufassen */
+  function zeichne(was, param) {
     window.scrollTo(0, 0);
     if (was === 'kontakt') zeigeKontakt(param);
     else if (was === 'chat') zeigeChat(param);
     else if (was === 'zettel') zeigeZettel();
     else zeigeListe();
+  }
+
+  var selbstGesetzt = false;
+
+  /* ---------- Steuerung ---------- */
+
+  function zeige(was, param) {
+    var neuerHash = hashFuer(was, param);
+    if (window.location.hash !== neuerHash) {
+      selbstGesetzt = true;
+      try { window.location.hash = neuerHash; }
+      catch (e) { selbstGesetzt = false; }
+    }
+    zeichne(was, param);
+  }
+
+  /* Zurück-Taste des Browsers und von Hand geänderte Adresse */
+  function aufHashwechsel() {
+    if (selbstGesetzt) { selbstGesetzt = false; return; }
+    var r = routeLesen();
+    if (!r) { zeige('liste'); return; }
+    zeichne(r.was, r.param);
   }
 
   function init() {
@@ -181,7 +227,7 @@ AUDIT.app = (function () {
       AUDIT.lexikon.umschalten();
     });
     document.getElementById('btnZettel').addEventListener('click', function () {
-      if (ansicht === 'zettel') zeigeListe(); else zeigeZettel();
+      if (ansicht === 'zettel') zeige('liste'); else zeige('zettel');
     });
 
     /* Tastatur: 1–4 wählt eine Antwort */
@@ -193,7 +239,24 @@ AUDIT.app = (function () {
       if (knoepfe[n - 1]) { e.preventDefault(); knoepfe[n - 1].click(); }
     });
 
-    zeigeListe();
+    window.addEventListener('hashchange', aufHashwechsel);
+
+    /* Startansicht aus der Adresszeile – unbekannte oder veraltete
+       Hashes werden stillschweigend entfernt. */
+    var start = routeLesen();
+    if (!start) {
+      try { history.replaceState(null, '', window.location.pathname + window.location.search); }
+      catch (e) { window.location.hash = ''; }
+      zeigeListe();
+    } else if (start.was === 'chat' &&
+               !AUDIT.data.dialoge.filter(function (d) { return d.id === start.param; })[0]) {
+      zeige('liste');
+    } else if (start.was === 'kontakt' && !AUDIT.data.kontakteMap[start.param]) {
+      zeige('liste');
+    } else {
+      zeichne(start.was, start.param);
+    }
+
     console.info('AUDIT bereit.', AUDIT.data.dialoge.length, 'Gespräche,',
       AUDIT.data.lexikon.length, 'Lexikoneinträge.');
   }

@@ -64,6 +64,10 @@ dieselbe Abfrage.
 * Jedes Gespräch endet mit einem Merksatz → landet automatisch im **Spickzettel**
   (📌 oben rechts, nach Themen sortiert, druckbar)
 * Der Fortschritt wird im Browser gespeichert
+* Die **Zurück-Taste des Browsers** (und die Zurück-Geste auf dem Handy) führt
+  eine Ebene höher: vom Gespräch zur Gesprächsliste, von dort zu den Kontakten
+* Die Ansicht steht in der Adresszeile, zum Beispiel `#/c/sab-01` – so lässt
+  sich ein einzelnes Gespräch direkt aufrufen oder als Lesezeichen ablegen
 
 ---
 

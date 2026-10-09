@@ -120,6 +120,17 @@ also nicht hart aus, sondern nur farblos.
 * **Der Absendername stand über jeder Blase**, auch bei fünf Nachrichten
   hintereinander. Jetzt nur noch beim Sprecherwechsel – im Gruppenchat über das
   Feld `von`.
+* **In der Adresszeile stand noch `#angriff`.** Die alte Fassung mit den fünf
+  Stationen hat bei jedem Wechsel `window.location.hash` gesetzt; die
+  Chat-Fassung las den Hash weder noch löschte sie ihn, also blieb der alte
+  Wert stehen. Dabei fiel auf, dass die **Zurück-Taste des Browsers die Seite
+  verließ**, statt eine Ebene höher zu gehen – auf dem Handy die natürliche
+  Geste. Beides ist jetzt gelöst: Die Ansicht steht als Route in der
+  Adresszeile (`#/`, `#/k/<kontakt>`, `#/c/<gespräch>`, `#/zettel`), ein
+  `hashchange`-Listener zeichnet die Ansicht neu, und ein unbekannter oder
+  veralteter Hash wird beim Start per `history.replaceState` still entfernt.
+  Damit sich Setzen und Reagieren nicht gegenseitig auslösen, merkt sich
+  `app.js` in `selbstGesetzt`, ob die Änderung von der App selbst kam.
 * **Der Primärknopf wurde beim Überfahren unlesbar.** Ursache war eine
   Spezifitätsfalle im CSS: `.btn:hover` (0-2-0) ist spezifischer als
   `.btn--primary` (0-1-0) und hat dessen Hintergrund überschrieben – grauer
