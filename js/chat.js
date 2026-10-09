@@ -119,7 +119,14 @@ AUDIT.chat = (function () {
      Ein Gespräch abspielen
      =========================================================== */
 
+  /* Laufende Nummer des aktuellen Gesprächs. Wechselt jemand das
+     Gespräch, während noch Nachrichten einlaufen, erkennen die alten
+     Zeitgeber daran, dass sie nicht mehr gebraucht werden. */
+  var laufNr = 0;
+
   function starte(dialog, mount, onFertig) {
+    var meinLauf = ++laufNr;
+    function aktiv() { return meinLauf === laufNr; }
     var kontakt = AUDIT.data.kontakteMap[dialog.kontakt] || { name: '?', bild: '💬' };
 
     U.clear(mount);
@@ -141,7 +148,10 @@ AUDIT.chat = (function () {
 
     function warte(ms, fn) {
       sofortFn = fn;
-      wartend = setTimeout(function () { wartend = null; sofortFn = null; fn(); }, ms);
+      wartend = setTimeout(function () {
+        wartend = null; sofortFn = null;
+        if (aktiv()) fn();
+      }, ms);
     }
 
     function tippenZeigen() {
@@ -154,13 +164,19 @@ AUDIT.chat = (function () {
       tippBlase = null;
     }
 
-    function blaseSie(html, extraKlasse, norm) {
+    function blaseSie(html, extraKlasse, norm, von) {
       tippenWeg();
-      /* Name nur über der ersten Blase einer Folge – sonst wird es unruhig */
+      /* Im Gruppenchat kann jede Nachricht einen eigenen Absender haben */
+      var name = von || kontakt.name;
+      /* Name nur über der ersten Blase einer Folge desselben Absenders */
       var letzte = verlauf.lastElementChild;
-      var zeigeName = !(letzte && letzte.classList.contains('blase--sie'));
-      var b = U.el('div', { class: 'blase blase--sie' + (extraKlasse ? ' ' + extraKlasse : '') });
-      if (zeigeName) b.appendChild(U.el('div', { class: 'blase__name', text: kontakt.name }));
+      var zeigeName = !(letzte && letzte.classList.contains('blase--sie') &&
+                        letzte.getAttribute('data-von') === name);
+      var b = U.el('div', {
+        class: 'blase blase--sie' + (extraKlasse ? ' ' + extraKlasse : ''),
+        data: { von: name }
+      });
+      if (zeigeName) b.appendChild(U.el('div', { class: 'blase__name', text: name }));
       b.appendChild(U.el('div', { html: U.rich(html) }));
       if (norm) b.appendChild(U.el('div', { class: 'blase__norm', text: norm }));
       verlauf.appendChild(b);
@@ -178,6 +194,7 @@ AUDIT.chat = (function () {
     /* ---------- Schritte ---------- */
 
     function weiter() {
+      if (!aktiv()) return;
       U.clear(antworten);
       if (i >= dialog.schritte.length) { ende(); return; }
       var s = dialog.schritte[i++];
@@ -185,7 +202,7 @@ AUDIT.chat = (function () {
       if (s.typ === 'nachricht') {
         tippenZeigen();
         warte(tippDauer(s.text), function () {
-          blaseSie(s.text, null, s.norm);
+          blaseSie(s.text, null, s.norm, s.von);
           warte(260, weiter);
         });
         return;
@@ -195,7 +212,7 @@ AUDIT.chat = (function () {
         tippenZeigen();
         warte(520, function () {
           tippenWeg();
-          var k = U.el('div', { class: 'blase blase--karte' });
+          var k = U.el('div', { class: 'blase blase--karte', data: { von: 'karte' } });
           if (s.titel) k.appendChild(U.el('h4', { text: s.titel }));
           k.appendChild(U.el('div', { html: karteInhalt(s) }));
           verlauf.appendChild(k);
@@ -209,7 +226,7 @@ AUDIT.chat = (function () {
         tippenZeigen();
         warte(420, function () {
           tippenWeg();
-          var m = U.el('div', { class: 'blase blase--merk' });
+          var m = U.el('div', { class: 'blase blase--merk', data: { von: 'merk' } });
           m.appendChild(U.el('div', { class: 'blase__name', text: '📌 Für den Spickzettel' }));
           m.appendChild(U.el('div', { html: U.rich(s.text) }));
           verlauf.appendChild(m);
@@ -243,14 +260,14 @@ AUDIT.chat = (function () {
           U.el('span', { html: U.rich(o.text) })
         ]);
         knopf.addEventListener('click', function () {
-          if (knopf.classList.contains('is-falsch')) return;
+          if (!aktiv() || knopf.classList.contains('is-falsch')) return;
           blaseIch(o.text);
 
           if (o.richtig) {
             U.clear(antworten);
             tippenZeigen();
             warte(tippDauer(o.antwort), function () {
-              blaseSie(o.antwort, 'blase--richtig', o.norm);
+              blaseSie(o.antwort, 'blase--richtig', o.norm, s.von);
               warte(380, weiter);
             });
           } else {
@@ -258,7 +275,7 @@ AUDIT.chat = (function () {
             knopf.setAttribute('disabled', 'disabled');
             tippenZeigen();
             warte(tippDauer(o.antwort), function () {
-              blaseSie(o.antwort, 'blase--falsch', o.norm);
+              blaseSie(o.antwort, 'blase--falsch', o.norm, s.von);
               scrollEnde();
             });
           }
@@ -290,6 +307,7 @@ AUDIT.chat = (function () {
 
       var pruefen = U.el('button', { class: 'btn btn--primary', text: 'Antwort abgeben' });
       pruefen.addEventListener('click', function () {
+        if (!aktiv()) return;
         var richtig = true;
         s.optionen.forEach(function (o, nr) {
           if (!!o.richtig !== !!gewaehlt[nr]) richtig = false;
@@ -302,13 +320,13 @@ AUDIT.chat = (function () {
           U.clear(antworten);
           tippenZeigen();
           warte(tippDauer(s.antwortRichtig), function () {
-            blaseSie(s.antwortRichtig, 'blase--richtig', s.norm);
+            blaseSie(s.antwortRichtig, 'blase--richtig', s.norm, s.von);
             warte(380, weiter);
           });
         } else {
           tippenZeigen();
           warte(tippDauer(s.antwortFalsch), function () {
-            blaseSie(s.antwortFalsch || 'Noch nicht ganz – schau es dir noch einmal an.', 'blase--falsch');
+            blaseSie(s.antwortFalsch || 'Noch nicht ganz – schau es dir noch einmal an.', 'blase--falsch', null, s.von);
             scrollEnde();
           });
         }
@@ -320,6 +338,7 @@ AUDIT.chat = (function () {
     /* ---------- Ende ---------- */
 
     function ende() {
+      if (!aktiv()) return;
       tippenWeg();
       U.clear(antworten);
       var box = U.el('div', { class: 'ende' });
