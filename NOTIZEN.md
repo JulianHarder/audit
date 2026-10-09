@@ -1,148 +1,143 @@
 # NOTIZEN zu AUDIT
 
-Entscheidungen, bekannte Schwächen und Ideen – damit du weißt, warum etwas so
-ist, wie es ist, und wo du gezielt nachbessern kannst.
+Entscheidungen, bekannte Schwächen und Ideen – damit klar ist, warum etwas so
+ist, wie es ist, und wo man gezielt nachbessern kann.
 
 ---
 
-## 1. Getroffene Entscheidungen
+## 1. Warum Chat statt Arbeitsfläche
+
+Die erste Fassung war eine 2D-Arbeitsfläche: Bausteine ziehen, verbinden, zoomen,
+fünf Stationen mit Unter-Tabs. Fachlich vollständig, aber als Lernmittel
+gescheitert – man musste erst einen **Editor bedienen lernen**, bevor man zum
+Prüfungsstoff kam. 32 Bausteine in der Leiste, 43 Karten in einer Station,
+29 Elemente in der Beispielfirma: zu viel auf einmal.
+
+Der Chat kehrt das um: Ein Nachrichtenverlauf muss niemand lernen. Eine Sache
+pro Bildschirm, zwei bis vier Antwortknöpfe, sofortige Begründung. Die alte
+Fassung liegt vollständig in der Git-Historie (Commits bis `e5063ef`), falls
+jemand Teile davon noch einmal braucht.
+
+**Was gerettet wurde:** alle Inhalte aus `data/` – Schadsoftware, Maßnahmen,
+DSGVO-Regeln, Betroffenenrechte, Rollen, Lexikon. Sie liefern heute die
+Übersichtstabellen mitten im Gespräch (Schritt-Typ `karte`) und das Lexikon.
+
+---
+
+## 2. Getroffene Entscheidungen
 
 ### Aufbau
 
-* **Drei Verbindungsarten** statt einer: `netz` (Ausbreitungsweg für Würmer und
-  Ransomware), `hosting` (überträgt den Schutzbedarf von der Anwendung auf das
-  System) und `datenfluss` (wird im DSGVO-Audit geprüft). Die Art wird beim
-  Verbinden automatisch aus den Kategorien abgeleitet und lässt sich im
-  Seitenpanel ändern. Ohne diese Trennung ließe sich weder die Vererbung noch
-  die Wurm-Ausbreitung sauber abbilden.
-* **Zonenzuordnung geometrisch:** Ein Baustein gehört zu dem Raum, in dessen
-  Rechteck sein Mittelpunkt liegt. Dadurch braucht es keine zusätzliche
-  Verknüpfung, und das Verschieben in einen Raum funktioniert intuitiv. Bei
-  überlappenden Zonen gewinnt die kleinere.
-* **Eine gemeinsame Firma für alle Stationen.** Jede Station legt eine eigene
-  Ansicht (Canvas-Instanz) auf dasselbe Modell `AUDIT.firma`. Was in Station 1–3
-  eingestellt wird, wirkt dadurch direkt im Ernstfall.
-* **Balken am Baustein haben je nach Station eine andere Bedeutung:**
-  in Werkstatt und Daten zeigen sie den *Schutzbedarf* (wie stark muss geschützt
-  werden), in Angriff und Ernstfall den *Zustand* der Schutzziele (wie stark ist
-  verletzt). Die Legende auf der Fläche sagt es jeweils dazu.
-* **Eigenes Drag & Drop über Pointer Events** statt HTML5-DnD: funktioniert
-  zuverlässig über der SVG-Fläche und auch mit Touch.
-* **Beim Laden wird die Firma „geheilt“**: Infektionen und Schäden einer
-  früheren Sitzung werden entfernt, gesetzte Schutzmaßnahmen bleiben erhalten.
-  Sonst startet man nach dem Neuladen in einer verseuchten Firma.
-* **Die Vorlage enthält absichtlich Schwachstellen** (Cloud-Archiv im Drittland
-  ohne AV-Vertrag, Backup am Netz, Newsletter ohne Rechtsgrundlage, fünf
-  Anwendungen auf einem Server). Sonst gäbe es in den Stationen nichts zu finden.
+* **Die Person ist der rote Faden, nicht das Kapitel.** Statt „Kapitel 3:
+  Schadsoftware" gibt es Sabrina aus der IT. Das macht die Auswahl konkreter und
+  erlaubt unterschiedliche Tonlagen: Der DSB siezt und formuliert juristisch,
+  Tim duzt und fragt naiv – bei ihm **erklärst du**, was den Stoff anders
+  verankert als reines Ankreuzen.
+* **Falsche Antworten kosten nichts.** Keine Punkte, kein Verlieren, keine
+  Sperre. Die falsche Option wird ausgegraut, die Begründung erscheint, man
+  wählt direkt neu. Wer sich fürs Raten bestraft fühlt, hört auf zu denken.
+* **Die Begründung steht im Verlauf, nicht in einem Dialogfenster.** Sie bleibt
+  dadurch lesbar, wenn man später zurückscrollt.
+* **Jedes Gespräch endet mit genau einem Merksatz.** Daraus wächst der
+  Spickzettel – der eigentliche Mehrwert für die Prüfungsvorbereitung.
+* **Übersichtstabellen kommen aus den Datendateien**, nicht abgeschrieben in den
+  Dialogtext. Wer die Kontrollarten korrigiert, korrigiert sie überall.
 
-### Fachliche Modellierung
+### Fachliche Entscheidungen
 
-* **Maximumprinzip** ist exakt umgesetzt: Das System bekommt den höchsten Wert
-  der Anwendungen, die darauf laufen.
-* **Kumulationseffekt** ist *vereinfacht*: Laufen mindestens **drei** Anwendungen
-  auf einem System und ergibt das Maximum nur „normal“, hebt AUDIT automatisch auf
-  „hoch“ an und erklärt das im Panel. In der Praxis ist das eine Einzelfall­ent­scheidung
-  mit Begründung – die feste Schwelle ist didaktisch, nicht normativ.
-* **Verteilungseffekt** wirkt nur auf die **Verfügbarkeit** und nur, wenn eine
-  Anwendung tatsächlich auf mehreren Systemen läuft; dann zählt sie für das
-  einzelne System eine Stufe niedriger. Für Vertraulichkeit greift er bewusst
-  nicht, weil die Daten auf jedem der Systeme liegen.
-* **Ein Firewall-Baustein blockiert die Ausbreitung** von Würmern und Ransomware
-  zwischen Netzbereichen. In Wirklichkeit kann eine Firewall selbst angegriffen
-  oder falsch konfiguriert sein; für die Prüfungslogik „Firewall trennt Netze“
-  ist die Vereinfachung sinnvoll.
-* **Datenminimierung** wird geprüft, indem jeder Zweck eine Liste der dafür
-  üblicherweise erforderlichen Datenarten mitbringt (`data/dsgvo.js`,
-  `AUDIT.data.zwecke`). Alles darüber hinaus wird beanstandet. Das ist eine
-  Lernhilfe, keine Rechtsprüfung – in der Praxis hängt die Erforderlichkeit vom
-  Einzelfall ab. Die Listen lassen sich leicht anpassen.
-* **Art. 34 im Ernstfall** wird vereinfacht bewertet: Ist irgendwo Verschlüsselung
-  gesetzt, gilt das Risiko als nicht hoch und die Benachrichtigung der Betroffenen
-  kann entfallen (Art. 34 Abs. 3 lit. a). In Wirklichkeit ist das eine
-  Risikoabwägung im Einzelfall.
-* **Die 72-Stunden-Uhr läuft beschleunigt** (eine Stunde ≈ 0,9 Sekunden) und
-  lässt sich pausieren. Aktionen kosten keine zusätzliche Zeit – gemessen wird
-  nur, in welcher Stunde sie erfolgen.
-* Der Fortschritt pro Station ist eine **Heuristik** (zum Beispiel: Anteil der
-  bewerteten Anwendungen, Anteil der ausprobierten Schadsoftware-Arten). Er soll
-  motivieren, ist aber keine Bewertung des Lernstands.
+* **Zwei Skalen beim Schutzbedarf.** Die Probeklausur arbeitet mit
+  *niedrig – mittel – hoch*, der BSI-Standard 200-2 mit *normal – hoch – sehr
+  hoch*. Beides wird erklärt und im Lexikon als Synonym geführt, damit in der
+  Prüfung keine Verwirrung entsteht.
+* **Artikelnummern als Zusatz, nicht als Pflicht.** Die Klausur verlangt
+  ausdrücklich keine Artikelangaben, sondern nachvollziehbare Begründungen in
+  eigenen Worten. Die Normen stehen deshalb als kleine Marke unter der Antwort –
+  sichtbar, aber nicht im Weg.
+* **Antworten in Klausursprache.** Die Begründungen sind bewusst nah an den
+  Formulierungen der Musterlösung gehalten, damit man beim Schreiben die
+  passenden Wendungen parat hat.
+* **Mehrfachauswahl verlangt die exakte Menge.** Wer eine richtige Option
+  vergisst oder eine falsche mitnimmt, bekommt einen Hinweis und darf erneut –
+  die Auswahl bleibt dabei stehen.
 
 ### Technik
 
-* `AUDIT.util.rich()` lässt einfaches HTML (`<b>`, `<br>`) durch und wandelt
-  `[[Begriff]]` in Lexikon-Links um. Das ist nur für **eigene** Inhalte aus
-  `data/` gedacht. Alles, was der Nutzer eingegeben hat (zum Beispiel
-  Bausteinnamen), wird vorher mit `esc()` behandelt.
-* Das volle Neuzeichnen der Fläche bei jeder Modelländerung ist bei den hier
-  üblichen 20–40 Bausteinen schnell genug. Während des Ziehens werden nur die
-  betroffenen Elemente aktualisiert.
+* Gleiche Grundlage wie vorher: kein Framework, keine Module, kein `fetch`,
+  lauffähig per Doppelklick. Alles hängt an `window.AUDIT`.
+* `AUDIT.util.rich()` lässt einfaches HTML durch und wandelt `[[Begriff]]` in
+  Lexikon-Links. Nur für **eigene** Inhalte aus `data/` gedacht.
+* Die Tippdauer richtet sich nach der Textlänge (380–1200 ms). Ein Klick in den
+  Verlauf überspringt jede Wartezeit – wichtig für alle, die schneller lesen.
 
 ---
 
-## 2. Fachlich bitte gegenprüfen
+## 3. Behobene Fehler, die man kennen sollte
 
-Diese Punkte stimmen nach aktuellem Stand, ändern sich aber erfahrungsgemäß oder
-werden im Unterricht teils anders dargestellt:
-
-* **EU-US Data Privacy Framework** als Angemessenheitsbeschluss für zertifizierte
-  US-Unternehmen (`data/lexikon.js`, Eintrag „Angemessenheitsbeschluss“). Die
-  bisherigen Vorgänger wurden vom EuGH gekippt – aktuellen Stand prüfen.
-* **Löschfrist für Bewerbungsunterlagen** „in der Regel ca. 6 Monate“ – das
-  ergibt sich aus den Klagefristen des AGG, ist aber keine feste gesetzliche
-  Frist.
-* **§ 38 BDSG, 20 Personen**: Die Grenze wurde in der Vergangenheit schon
-  geändert (früher 10). Vor der Prüfung noch einmal abgleichen.
-* **TDDDG** heißt seit der Umbenennung so (vorher TTDSG). Falls im Unterricht
-  noch „TTDSG“ verwendet wird, ist beides als Alias im Lexikon hinterlegt.
-* **Religionszugehörigkeit in der Lohnbuchhaltung** ist als Beispiel für eine
-  zulässige Verarbeitung besonderer Kategorien genannt (Kirchensteuer). Je nach
-  Lehrmeinung wird das über Art. 9 Abs. 2 lit. b oder über § 26 BDSG begründet.
-* Die Zuordnung „federführend“ bei den Ereignis-Karten in Station 4 ist in
-  einigen Fällen diskutabel (etwa bei der Einführung neuer Software, wo DSB,
-  ISB und Leitung zusammenwirken). AUDIT akzeptiert deshalb auch die übrigen
-  beteiligten Rollen als „fast richtig“ und erklärt die Aufteilung.
+* **Alte Gespräche liefen im Hintergrund weiter.** Wechselte man das Gespräch,
+  während noch Nachrichten einliefen, schrieben die alten Zeitgeber ihre
+  Antwortknöpfe in den neuen Verlauf. Gelöst über eine laufende Nummer
+  (`laufNr` in `js/chat.js`): Jeder Zeitgeber prüft vor dem Ausführen, ob sein
+  Gespräch noch das aktuelle ist. Wer an der Engine arbeitet, muss diese Prüfung
+  bei neuen Schritt-Typen mitziehen.
+* **Der Absendername stand über jeder Blase**, auch bei fünf Nachrichten
+  hintereinander. Jetzt nur noch beim Sprecherwechsel – im Gruppenchat über das
+  Feld `von`.
 
 ---
 
-## 3. Bekannte Schwächen
+## 4. Fachlich gegenprüfen
 
-* **Kein Mehrfachauswählen** auf der Fläche: Es lässt sich immer nur ein Element
-  gleichzeitig auswählen, verschieben oder löschen.
-* **Undo ist einstufig gedacht**, aber als Stapel mit bis zu 40 Schritten
-  umgesetzt. Nicht jede Aktion legt einen Wiederherstellungspunkt an – zum
-  Beispiel das reine Umschalten einer Checkbox im Panel schon, das Ändern der
-  Ansicht (Zoom) nicht.
-* **Kanten lassen sich nicht umbiegen**; sie werden immer als gerade Linie
-  zwischen den Rändern gezeichnet. Bei sehr vielen Verbindungen wird es unruhig.
-* **Mobil ist die Seite bedienbar, aber eng.** Die Arbeitsfläche ist für Maus
-  gedacht; auf dem Handy funktioniert Ziehen und Tippen, Zoomen aber nur über
-  die Knöpfe. Das Lexikon ist dort voll nutzbar.
-* **Die Simulationen laufen nacheinander**: Während eine Schadsoftware-Simulation
-  läuft, wird eine zweite abgelehnt. Das ist Absicht, kann aber ungewohnt wirken.
-* **Keine Barrierefreiheit-Prüfung**: Die SVG-Fläche ist nicht per Tastatur
-  bedienbar, es gibt keine ARIA-Rollen.
-* **Der Fortschritt lässt sich nicht gezielt zurücksetzen** – nur über das
-  Löschen der Browserdaten.
-* Beim Wechsel der Station wird die Ansicht jeweils neu eingepasst; die eigene
-  Zoomstufe geht dabei verloren.
+Diese Punkte stimmen nach aktuellem Stand, ändern sich aber erfahrungsgemäß:
+
+* **Speicherdauer von Videoaufnahmen** (`dsb-07`): „in der Regel 48–72 Stunden"
+  entspricht der Aufsichtspraxis, ist aber keine gesetzliche Frist.
+* **Aufbewahrung von Rechnungen**: bis zu zehn Jahre (Handels- und Steuerrecht).
+  Die genauen Fristen unterscheiden sich je nach Belegart.
+* **Bewerbungsunterlagen ca. sechs Monate** – ergibt sich aus den Klagefristen
+  des AGG, ist keine feste gesetzliche Frist.
+* **EU-US Data Privacy Framework** als Angemessenheitsbeschluss: Die beiden
+  Vorgänger wurden vom EuGH gekippt. Vor der Prüfung aktuellen Stand prüfen.
+* **§ 38 BDSG, 20 Personen** für die DSB-Benennungspflicht – die Grenze lag
+  früher bei zehn und wurde bereits geändert.
+* **TDDDG** heißt seit der Umbenennung so (vorher TTDSG); beides liegt als
+  Synonym im Lexikon.
+* **Zuordnung „federführend"** bei Rollenfragen ist in Einzelfällen diskutabel,
+  etwa bei der Einführung neuer Software, wo DSB, ISB und Leitung zusammenwirken.
+  Die Erklärungen nennen deshalb immer alle Beteiligten.
 
 ---
 
-## 4. Ideen für später
+## 5. Bekannte Schwächen
 
-* **Übungsmodus mit Aufgaben**: „Stelle den Schutzbedarf der Lohnbuchhaltung
-  richtig ein“ oder „Finde alle Verstöße in der Vorlage“ mit Auflösung.
-* **Verzeichnis von Verarbeitungstätigkeiten** automatisch aus den Datenflüssen
-  erzeugen und als Tabelle ausgeben – das ist prüfungsrelevant und würde die
-  Rechenschaftspflicht greifbar machen.
-* **Export der eigenen Firma** als Datei (Download/Upload), damit man sie
-  zwischen Rechnern mitnehmen kann.
-* **Zweiter Ernstfall** mit anderem Szenario, etwa Datenpanne durch falschen
-  Mailverteiler oder Diebstahl eines Laptops.
-* **Zeitachse im Ernstfall**: anzeigen, wie sich frühere Entscheidungen auf die
-  Zahl der betroffenen Systeme ausgewirkt haben.
-* **Druckansicht** für Lexikon und Auswertungen als Lernzettel.
-* **Mehr Bausteine**: Drucker/MFP, Telefonanlage, IoT-Sensoren im Lager,
-  mobile Scanner – alles typische Schwachstellen in einer Logistikfirma.
-* **Kurzer Selbsttest pro Station** am Ende (bewusst kein Quiz als Hauptweg,
-  aber als freiwillige Kontrolle).
+* **Keine Suche über die Gespräche.** Wer gezielt „Pseudonymisierung" sucht, muss
+  die Kontakte durchgehen – nur das Lexikon hat ein Suchfeld.
+* **Kein Wiederholungsmodus.** Falsch beantwortete Fragen tauchen nicht später
+  erneut auf; man kann ein Gespräch nur komplett wiederholen.
+* **Die Reihenfolge innerhalb eines Kontakts ist nur eine Empfehlung.** Es gibt
+  keine Sperre, man kann mit dem letzten Gespräch anfangen. Bei Tim bauen die
+  Gespräche aufeinander auf.
+* **Breite Übersichtstabellen** muss man auf dem Handy seitlich schieben. Ein
+  Hinweis steht darunter, schön ist es trotzdem nicht.
+* **Keine Barrierefreiheit-Prüfung.** Die Antwortknöpfe sind über die Tastatur
+  erreichbar (Zahlen 1–9), ARIA-Rollen und Vorlese-Unterstützung fehlen.
+* **Der Fortschritt lässt sich nicht einzeln zurücksetzen** – nur der
+  Spickzettel hat einen Knopf dafür, die erledigten Gespräche nicht.
+* **Kein Export.** Der Spickzettel lässt sich drucken, aber nicht als Datei
+  mitnehmen oder zwischen Geräten übertragen.
+
+---
+
+## 6. Ideen für später
+
+* **Prüfungsmodus**: zehn zufällige Fragen aus allen Gesprächen am Stück, ohne
+  Erklärung dazwischen, Auswertung am Ende – als Selbsttest kurz vor der Klausur.
+* **Falsch beantwortete Fragen sammeln** und in einer eigenen Wiederholungsrunde
+  erneut stellen.
+* **Zweiter Klausursatz**: Die zweite Datei auf dem Stick (`Klausur_ModIV_.docx`)
+  ist noch nicht ausgewertet – daraus ließen sich weitere Fälle gewinnen.
+* **Mehr WISO-Bezug**: Wirtschaftlichkeit von Sicherheitsmaßnahmen, Kosten eines
+  Ausfalls, Nutzen-Argumentation gegenüber der Geschäftsführung.
+* **Spickzettel als PDF oder Markdown exportieren.**
+* **Suchfeld über alle Gespräche**, das zum passenden Schritt springt.
+* **Themenübersicht**: eine Seite, die zeigt, welches Prüfungsthema in welchem
+  Gespräch vorkommt – hilfreich beim gezielten Wiederholen.
