@@ -81,11 +81,7 @@ AUDIT.stationen.push({
     stage.replaceChild(ui.firmaToolbar(cv), stage.firstChild);
 
     /* ---------- Palette ---------- */
-    AUDIT.palette.baue(pal, [{
-      titel: 'Anleitung',
-      hinweis: 'Bausteine von hier auf die Fläche ziehen. Anschlusspunkt (kleiner Kreis) ' +
-        'auf einen anderen Baustein ziehen, um zu verbinden.'
-    }].concat(AUDIT.palette.bausteinGruppen()));
+    AUDIT.palette.baue(pal, AUDIT.palette.bausteinGruppen());
 
     /* ---------- Panel ---------- */
 

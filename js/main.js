@@ -18,6 +18,7 @@ AUDIT.main = (function () {
   /* ---------- Startseite ---------- */
 
   function startseite(container) {
+    var ui = AUDIT.ui;
     var box = U.el('div', { class: 'intro' });
     var inner = U.el('div', { class: 'intro__inner' });
     box.appendChild(inner);
@@ -26,77 +27,97 @@ AUDIT.main = (function () {
     inner.appendChild(U.el('h1', { html: '<b>AUDIT</b> – Firma bauen, angreifen, absichern' }));
     inner.appendChild(U.el('p', {
       class: 'intro__lead',
-      text: 'Eine interaktive Lernwerkstatt zu IT-Sicherheit, Datenschutz und Compliance. ' +
-        'Du baust die Lippe Logistik GmbH auf, stellst ihren Schutzbedarf fest, greifst sie mit ' +
-        'Schadsoftware an, sicherst sie ab, prüfst ihre Datenflüsse nach DSGVO und führst sie ' +
-        'durch einen Ernstfall. Kein Quiz – du lernst, indem du etwas tust und siehst, was passiert.'
+      text: 'Lernwerkstatt für IT-Sicherheit, Datenschutz und Compliance. ' +
+        'Du bekommst in jeder Station eine Aufgabe und siehst sofort, was passiert.'
     }));
 
-    inner.appendChild(U.el('h2', { text: 'So funktioniert AUDIT', style: { marginTop: '26px', fontSize: '17px' } }));
-    var ul = U.el('ul', { style: { color: 'var(--text-dim)', lineHeight: '1.9', maxWidth: '72ch' } });
-    [
-      'Links ist die <b>Baustein-Leiste</b>: Systeme, Anwendungen, Personen, Räume. Zieh sie auf die Fläche.',
-      'Die <b>Arbeitsfläche</b> verschiebst du mit der Maus, zoomen mit dem Mausrad.',
-      'Bausteine <b>verbindest</b> du, indem du einen der kleinen Anschlusspunkte am Rand auf einen anderen Baustein ziehst.',
-      'Rechts erklärt das <b>Seitenpanel</b> immer das Element, das du angeklickt hast.',
-      'Fachbegriffe sind <span class="lx" data-lx="Schutzziele">so markiert</span> – ein Klick öffnet das Lexikon.',
-      'Deine Firma bleibt über alle Stationen dieselbe. Was du in Station 1–3 absicherst, wirkt im <b>Ernstfall</b>.'
-    ].forEach(function (t) { ul.appendChild(U.el('li', { html: t })); });
-    inner.appendChild(ul);
+    /* Großer Einstieg */
+    var los = U.el('div', { style: { display: 'flex', gap: '8px', margin: '18px 0 6px', flexWrap: 'wrap', alignItems: 'center' } });
+    los.appendChild(U.el('button', {
+      class: 'btn btn--primary',
+      style: { fontSize: '15px', padding: '11px 20px' },
+      text: '▶ Loslegen – Station 1',
+      onclick: function () { zeige('werkstatt'); }
+    }));
+    los.appendChild(U.el('button', {
+      class: 'btn btn--sm', text: 'Große Beispielfirma laden',
+      title: 'Die vollständige Firma mit 22 Bausteinen – mehr zum Entdecken, aber unübersichtlicher',
+      onclick: function () { F.laden(AUDIT.data.vorlage); U.toast('Große Beispielfirma geladen.', 'ok'); zeige('werkstatt'); }
+    }));
+    los.appendChild(U.el('button', {
+      class: 'btn btn--sm', text: 'Leere Fläche',
+      onclick: function () { F.neu(); zeige('werkstatt'); }
+    }));
+    los.appendChild(U.el('button', {
+      class: 'btn btn--sm', text: 'Gespeicherte laden',
+      onclick: function () { AUDIT.ui.ladenDialog(null); }
+    }));
+    inner.appendChild(los);
 
-    inner.appendChild(U.el('h2', { text: 'Die Stationen', style: { marginTop: '26px', fontSize: '17px' } }));
-    var grid = U.el('div', { class: 'grid3' });
-    AUDIT.stationen.forEach(function (s) {
-      var t = U.el('div', { class: 'tile', onclick: function () { zeige(s.key); } }, [
-        U.el('div', { class: 'tile__n', text: 'Station ' + s.num }),
-        U.el('div', { class: 'tile__h', text: (s.icon || '') + ' ' + s.label }),
-        U.el('div', { class: 'tile__t', text: s.kurz || '' }),
-        U.el('div', { class: 'tile__prog', data: { prog: s.key }, text: 'noch nicht begonnen' })
-      ]);
-      grid.appendChild(t);
-    });
-    inner.appendChild(grid);
-
-    inner.appendChild(U.el('h2', { text: 'Deine Firma', style: { marginTop: '26px', fontSize: '17px' } }));
-    var fz = U.el('div', { class: 'card' });
+    var fz = U.el('p', { class: 'sub' });
     function fzFuellen() {
-      U.clear(fz);
       var d = F.data;
-      fz.appendChild(U.el('div', { class: 'card__h', text: d.name }));
-      fz.appendChild(U.el('div', {
-        class: 'card__b',
-        text: d.nodes.length + ' Bausteine · ' + d.edges.length + ' Verbindungen · ' + d.zonen.length + ' Zonen'
-      }));
-      var btns = U.el('div', { style: { display: 'flex', gap: '6px', marginTop: '8px', flexWrap: 'wrap' } });
-      btns.appendChild(U.el('button', {
-        class: 'btn btn--primary btn--sm', text: 'Vorlage „Lippe Logistik GmbH“ laden',
-        onclick: function () { F.ladeVorlage(); zeige('werkstatt'); }
-      }));
-      btns.appendChild(U.el('button', {
-        class: 'btn btn--sm', text: 'Leer anfangen',
-        onclick: function () { F.neu(); zeige('werkstatt'); }
-      }));
-      btns.appendChild(U.el('button', {
-        class: 'btn btn--sm', text: 'Gespeicherte Firma laden',
-        onclick: function () { AUDIT.ui.ladenDialog(null); }
-      }));
-      fz.appendChild(btns);
-      if (!AUDIT.storage.verfuegbar) {
-        fz.appendChild(U.el('div', {
-          class: 'note note--warn',
-          text: 'Dieser Browser erlaubt hier keinen dauerhaften Speicher. Fortschritt und Firmen ' +
-            'gehen beim Neuladen verloren – zum Lernen reicht es trotzdem.'
-        }));
-      }
+      fz.textContent = 'Aktuell auf der Fläche: ' + d.name + ' – ' +
+        d.nodes.length + ' Bausteine, ' + d.edges.length + ' Verbindungen.';
     }
     fzFuellen();
     F.onChange(fzFuellen);
     inner.appendChild(fz);
 
+    /* Stationen */
+    var grid = U.el('div', { class: 'grid3', style: { marginTop: '18px' } });
+    AUDIT.stationen.forEach(function (s) {
+      grid.appendChild(U.el('div', { class: 'tile', onclick: function () { zeige(s.key); } }, [
+        U.el('div', { class: 'tile__n', text: 'Station ' + s.num }),
+        U.el('div', { class: 'tile__h', text: (s.icon || '') + ' ' + s.label }),
+        U.el('div', { class: 'tile__t', text: s.kurz || '' }),
+        U.el('div', { class: 'tile__prog', data: { prog: s.key }, text: 'noch nicht begonnen' })
+      ]));
+    });
+    inner.appendChild(grid);
+
+    /* Bedienung – zugeklappt, man braucht sie nicht zum Anfangen */
+    inner.appendChild(ui.klapp('So bedienst du die Arbeitsfläche', function () {
+      var ul = U.el('ul', { style: { color: 'var(--text-dim)', lineHeight: '1.9', margin: '4px 0 0 18px', padding: '0' } });
+      [
+        'Bausteine aus der <b>linken Leiste</b> auf die Fläche ziehen.',
+        'Fläche verschieben: mit der Maus ziehen. Zoomen: Mausrad.',
+        '<b>Verbinden</b>: einen der kleinen Anschlusspunkte am Rand eines Bausteins auf einen anderen ziehen.',
+        'Rechts im <b>Seitenpanel</b> steht alles zum angeklickten Element.',
+        'Fachbegriffe sind <span class="lx" data-lx="Schutzziele">so markiert</span> – ein Klick öffnet das Lexikon.',
+        'Löschen: Entf-Taste · Rückgängig: Strg + Z'
+      ].forEach(function (t) { ul.appendChild(U.el('li', { html: t })); });
+      return ul;
+    }));
+
+    inner.appendChild(ui.klapp('Worum geht es in AUDIT?', function () {
+      return U.el('div', {}, [
+        U.el('p', {
+          style: { color: 'var(--text-dim)' },
+          text: 'Du arbeitest durchgehend an einer Firma: der Lippe Logistik GmbH. ' +
+            'Du stellst ihren Schutzbedarf fest, greifst sie mit Schadsoftware an, sicherst sie ab, ' +
+            'prüfst ihre Datenflüsse nach DSGVO, klärst Zuständigkeiten und führst sie durch einen Ernstfall.'
+        }),
+        U.el('p', {
+          style: { color: 'var(--text-dim)' },
+          text: 'Kein Quiz und keine Karteikarten: Was du in den Stationen 1 bis 4 absicherst, ' +
+            'entscheidet darüber, wie der Ernstfall in Station 5 ausgeht.'
+        })
+      ]);
+    }));
+
+    if (!AUDIT.storage.verfuegbar) {
+      inner.appendChild(U.el('div', {
+        class: 'note note--warn',
+        text: 'Dieser Browser erlaubt hier keinen dauerhaften Speicher. Fortschritt und Firmen ' +
+          'gehen beim Neuladen verloren – zum Lernen reicht es trotzdem.'
+      }));
+    }
+
     inner.appendChild(U.el('p', {
       class: 'sub', style: { marginTop: '22px' },
-      html: U.rich('Hinweis: AUDIT ist eine Lernhilfe für die IHK-Prüfung und keine Rechtsberatung. ' +
-        'Die Artikelangaben beziehen sich auf die [[DSGVO]].')
+      html: U.rich('AUDIT ist eine Lernhilfe für die IHK-Prüfung und keine Rechtsberatung. ' +
+        'Artikelangaben beziehen sich auf die [[DSGVO]].')
     }));
     return {};
   }
@@ -181,7 +202,7 @@ AUDIT.main = (function () {
     /* Firma: zuletzt bearbeiteter Stand oder Vorlage */
     var letzte = AUDIT.storage.get('letzteFirma', null);
     if (letzte && letzte.nodes && letzte.nodes.length) F.laden(letzte, true);
-    else F.laden(AUDIT.data.vorlage, true);
+    else F.laden(AUDIT.data.vorlageKlein, true);   /* klein anfangen */
     /* Mit einer sauberen Firma starten: Simulationsspuren der letzten
        Sitzung entfernen, gesetzte Maßnahmen bleiben erhalten. */
     F.heilen();

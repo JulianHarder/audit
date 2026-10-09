@@ -84,48 +84,84 @@ AUDIT.stationen.push({
 
     /* ================= Palette ================= */
 
+    var palModus = 'angriff';   /* 'angriff' | 'schutz' */
+
     function paletteBauen() {
-      AUDIT.palette.baue(pal, [
-        {
-          titel: 'Schadsoftware',
-          hinweis: 'Karte auf ein <b>System</b> ziehen (Hoax und Phishing auf eine <b>Person</b>). ' +
-                   'Schau genau hin, wie sich die Art verhält.',
-          items: D.schadsoftware.map(function (s) {
-            return {
-              icon: s.icon, label: s.name, titel: s.kurz,
-              klasse: 'pitem--malware',
-              farbe: 'var(--bad)',
-              payload: { art: 'malware', key: s.key },
-              onClick: function () { zeigeMalware(s); }
-            };
-          })
-        },
-        {
-          titel: 'Angreifer',
-          hinweis: 'Zutritt = Raum · Zugang = System · Zugriff = Daten',
-          items: D.angreifer.map(function (a) {
-            return {
-              icon: a.icon, label: a.name, titel: a.versucht,
-              farbe: 'var(--warn)',
-              payload: { art: 'angreifer', key: a.key },
-              onClick: function () { zeigeAngreifer(a); }
-            };
-          })
-        },
-        {
-          titel: 'Schutzmaßnahmen',
-          hinweis: 'Maßnahme auf ein System, eine Person oder einen Raum ziehen.',
-          items: D.massnahmen.map(function (m) {
-            return {
-              icon: m.icon, label: m.name, titel: m.kurz,
-              farbe: 'var(--ok)',
-              payload: { art: 'massnahme', key: m.key },
-              onClick: function () { zeigeMassnahme(m); }
-            };
-          })
-        }
-      ]);
+      U.clear(pal);
+
+      /* Umschalter: entweder angreifen oder schützen – nie beides auf einmal */
+      var seg = U.el('div', { class: 'seg', style: { marginBottom: '10px' } });
+      [['angriff', '☣️ Angreifen'], ['schutz', '🛡 Schützen']].forEach(function (m) {
+        seg.appendChild(U.el('button', {
+          class: palModus === m[0] ? 'is-on' : '',
+          text: m[1],
+          style: palModus === m[0] ? { background: 'var(--accent)', color: '#06131a' } : null,
+          onclick: function () { palModus = m[0]; paletteBauen(); }
+        }));
+      });
+      pal.appendChild(seg);
+
+      var liste = U.el('div');
+      pal.appendChild(liste);
+
+      if (palModus === 'angriff') {
+        AUDIT.palette.baue(liste, [
+          {
+            key: 'schadsoftware', titel: 'Schadsoftware', offen: true,
+            hinweis: 'Karte auf ein <b>System</b> ziehen. Hoax und Phishing gehören auf eine <b>Person</b>.',
+            items: D.schadsoftware.map(function (x) {
+              return {
+                icon: x.icon, label: x.name, titel: x.kurz,
+                farbe: 'var(--bad)',
+                payload: { art: 'malware', key: x.key },
+                onClick: function () { zeigeMalware(x); }
+              };
+            })
+          },
+          {
+            key: 'angreifer', titel: 'Angreifer (Zutritt · Zugang · Zugriff)', offen: false,
+            items: D.angreifer.map(function (a) {
+              return {
+                icon: a.icon, label: a.name, titel: a.versucht,
+                farbe: 'var(--warn)',
+                payload: { art: 'angreifer', key: a.key },
+                onClick: function () { zeigeAngreifer(a); }
+              };
+            })
+          }
+        ]);
+      } else {
+        /* Maßnahmen nach Wirkung gruppiert statt 20 Karten am Stück */
+        var gruppen = [
+          { key: 'technik', titel: 'Technischer Schutz', offen: true,
+            keys: ['virenscanner', 'updates', 'firewall', 'segmentierung', 'backup', 'verschluesselung', 'mailfilter', 'neuaufsetzen'] },
+          { key: 'menschen', titel: 'Menschen & Organisation', offen: false,
+            keys: ['schulung', 'meldeweg', 'rechte'] },
+          { key: 'zutritt', titel: 'Zutritt (Raum)', offen: false,
+            keys: ['schluessel', 'alarm', 'besucherbuch'] },
+          { key: 'zugang', titel: 'Zugang (System)', offen: false,
+            keys: ['passwort', 'zweifaktor', 'bildschirmsperre'] },
+          { key: 'zugriff', titel: 'Zugriff (Daten)', offen: false,
+            keys: ['berechtigung', 'needtoknow', 'protokollierung'] }
+        ];
+        AUDIT.palette.baue(liste, gruppen.map(function (g) {
+          return {
+            key: g.key, titel: g.titel, offen: g.offen,
+            hinweis: g.offen ? 'Maßnahme auf ein System, eine Person oder einen Raum ziehen.' : null,
+            items: g.keys.map(function (k) { return D.massnahmenMap[k]; }).filter(Boolean)
+              .map(function (m) {
+                return {
+                  icon: m.icon, label: m.name, titel: m.kurz,
+                  farbe: 'var(--ok)',
+                  payload: { art: 'massnahme', key: m.key },
+                  onClick: function () { zeigeMassnahme(m); }
+                };
+              })
+          };
+        }));
+      }
     }
+
     paletteBauen();
 
     /* ================= Drop-Verarbeitung ================= */

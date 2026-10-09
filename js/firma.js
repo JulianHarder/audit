@@ -357,9 +357,11 @@ AUDIT.firma = (function () {
     if (!stumm) changed('alles');
   }
 
-  function ladeVorlage() {
-    laden(AUDIT.data.vorlage);
-    U.toast('Vorlage <b>' + AUDIT.data.vorlage.name + '</b> geladen.', 'ok');
+  /* welche: 'klein' (Standard) oder 'gross' */
+  function ladeVorlage(welche) {
+    var v = (welche === 'gross') ? AUDIT.data.vorlage : AUDIT.data.vorlageKlein;
+    laden(v);
+    U.toast('<b>' + v.name + '</b> geladen.', 'ok');
   }
 
   function neu() {

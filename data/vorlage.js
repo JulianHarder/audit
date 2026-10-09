@@ -115,3 +115,43 @@ AUDIT.data.vorlage = {
       daten: ['email'], zweck: 'intern', rechtsgrundlage: 'f', verschluesselt: true }
   ]
 };
+
+/* ===========================================================
+   Kleine Startfirma – damit man nicht vor einem Wimmelbild steht.
+   Sieben Bausteine, zwei Räume. Die Lohnbuchhaltung ist mit Absicht
+   weder bewertet noch mit dem Server verbunden: Genau das sind die
+   ersten beiden Aufgaben in der Werkstatt.
+   =========================================================== */
+
+AUDIT.data.vorlageKlein = {
+  name: 'Lippe Logistik GmbH (klein)',
+  beschreibung: 'Kleiner Ausschnitt der Firma zum Einsteigen: ein Büroarbeitsplatz, ' +
+    'der Server mit zwei Anwendungen und ein Backup.',
+
+  zonen: [
+    { id: 'kz1', typ: 'z_buero',      x:  40, y:  40, w: 320, h: 250 },
+    { id: 'kz2', typ: 'z_serverraum', x: 400, y:  40, w: 340, h: 250 }
+  ],
+
+  nodes: [
+    { id: 'kma1',  typ: 'mitarbeiter', x:  80, y: 205, name: 'Frau Lüttmann' },
+    { id: 'kpc1',  typ: 'pc',          x:  80, y: 105, name: 'Arbeitsplatz-PC' },
+    { id: 'ksrv1', typ: 'server',      x: 440, y: 105, name: 'Server SRV-01' },
+    { id: 'kbak1', typ: 'backup',      x: 440, y: 200, name: 'Backup (am Netz)',
+      props: { offline: false } },
+    { id: 'kfw1',  typ: 'firewall',    x: 230, y: 330, name: 'Firewall' },
+
+    { id: 'kwawi', typ: 'wawi',        x: 410, y: 350, name: 'Warenwirtschaft',
+      schutzbedarf: { v: 'normal', i: 'hoch', a: 'sehrhoch' } },
+    { id: 'klohn', typ: 'lohn',        x: 590, y: 350, name: 'Lohnbuchhaltung' }
+  ],
+
+  edges: [
+    { from: 'kpc1',  to: 'kfw1',  art: 'netz' },
+    { from: 'kfw1',  to: 'ksrv1', art: 'netz' },
+    { from: 'ksrv1', to: 'kbak1', art: 'netz' },
+    { from: 'kwawi', to: 'ksrv1', art: 'hosting' },
+    { from: 'kma1',  to: 'kpc1',  art: 'datenfluss',
+      daten: [], zweck: 'intern', rechtsgrundlage: 'c' }
+  ]
+};

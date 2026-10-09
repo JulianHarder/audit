@@ -25,23 +25,27 @@ AUDIT.ui = (function () {
       html: '<b style="color:var(--text)">' + U.esc(F.data.name) + '</b>'
     }));
     bar.appendChild(U.el('div', { class: 'toolbar__sep' }));
-    bar.appendChild(btn('Vorlage', 'Beispielfirma „Lippe Logistik GmbH“ laden', function () {
-      U.modal('Vorlage laden?',
-        '<p>Damit wird die aktuelle Arbeitsfläche <b>überschrieben</b>. ' +
-        'Die Beispielfirma enthält absichtlich einige Schwachstellen, die du in den Stationen findest.</p>',
-        [{ label: 'Abbrechen' }, {
-          label: 'Vorlage laden', primary: true, onClick: function (close) {
-            F.ladeVorlage(); close(); setTimeout(function () { cv.einpassen(); }, 20);
+    bar.appendChild(btn('Firma wechseln', 'Andere Firma laden – die aktuelle wird überschrieben', function () {
+      U.modal('Welche Firma?',
+        '<p>Die aktuelle Arbeitsfläche wird dabei <b>überschrieben</b>.</p>',
+        [
+          { label: 'Abbrechen' },
+          {
+            label: 'Klein', onClick: function (close) {
+              F.ladeVorlage('klein'); close(); setTimeout(function () { cv.einpassen(); }, 20);
+            }
+          },
+          {
+            label: 'Groß', onClick: function (close) {
+              F.ladeVorlage('gross'); close(); setTimeout(function () { cv.einpassen(); }, 20);
+            }
+          },
+          {
+            label: 'Leer', danger: true, onClick: function (close) {
+              F.neu(); close(); U.toast('Leere Fläche. Zieh links Bausteine darauf.', 'ok');
+            }
           }
-        }]);
-    }));
-    bar.appendChild(btn('Leere Fläche', 'Freier Modus: eigene Firma von Null aufbauen', function () {
-      U.modal('Leere Fläche?', '<p>Die aktuelle Firma wird verworfen. Fortfahren?</p>',
-        [{ label: 'Abbrechen' }, {
-          label: 'Leeren', danger: true, onClick: function (close) {
-            F.neu(); close(); U.toast('Leere Fläche. Zieh links Bausteine auf die Fläche.', 'ok');
-          }
-        }]);
+        ]);
     }));
     bar.appendChild(U.el('div', { class: 'toolbar__sep' }));
     bar.appendChild(btn('Speichern', 'Firma im Browser speichern', speichernDialog));
@@ -209,6 +213,40 @@ AUDIT.ui = (function () {
     return l;
   }
 
+  /* ---------- Klappbox ----------
+     Alles, was nicht sofort gebraucht wird, kommt hier hinein.
+     inhalt: Element, Array von Elementen, HTML-String oder Funktion
+     (die Funktion wird erst beim Aufklappen ausgewertet).          */
+
+  function klapp(titel, inhalt, offen, zaehler) {
+    var box = U.el('div', { class: 'klapp' + (offen ? ' is-open' : '') });
+    var kopf = U.el('div', { class: 'klapp__h' }, [
+      U.el('span', { html: U.lexify(titel) })
+    ]);
+    if (zaehler) kopf.appendChild(U.el('span', { class: 'klapp__n', text: String(zaehler) }));
+    var body = U.el('div', { class: 'klapp__b' });
+    var gefuellt = false;
+
+    function fuellen() {
+      if (gefuellt) return;
+      gefuellt = true;
+      var c = (typeof inhalt === 'function') ? inhalt() : inhalt;
+      if (typeof c === 'string') body.innerHTML = U.lexify(c);
+      else if (Array.isArray(c)) c.forEach(function (x) { if (x) body.appendChild(x); });
+      else if (c) body.appendChild(c);
+    }
+
+    kopf.addEventListener('click', function () {
+      box.classList.toggle('is-open');
+      if (box.classList.contains('is-open')) fuellen();
+    });
+    if (offen) fuellen();
+
+    box.appendChild(kopf);
+    box.appendChild(body);
+    return box;
+  }
+
   function note(text, art) {
     return U.el('div', { class: 'note' + (art ? ' note--' + art : ''), html: U.lexify(text) });
   }
@@ -226,6 +264,6 @@ AUDIT.ui = (function () {
     firmaToolbar: firmaToolbar, speichernDialog: speichernDialog, ladenDialog: ladenDialog,
     segment: segment, balken: balken, stufenTag: stufenTag, panelKopf: panelKopf,
     namensFeld: namensFeld, select: select, checkbox: checkbox,
-    note: note, merk: merk, karte: karte
+    note: note, merk: merk, karte: karte, klapp: klapp
   };
 })();
