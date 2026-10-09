@@ -120,6 +120,18 @@ also nicht hart aus, sondern nur farblos.
 * **Der Absendername stand über jeder Blase**, auch bei fünf Nachrichten
   hintereinander. Jetzt nur noch beim Sprecherwechsel – im Gruppenchat über das
   Feld `von`.
+* **Der Primärknopf wurde beim Überfahren unlesbar.** Ursache war eine
+  Spezifitätsfalle im CSS: `.btn:hover` (0-2-0) ist spezifischer als
+  `.btn--primary` (0-1-0) und hat dessen Hintergrund überschrieben – grauer
+  Knopf mit dunkelblauer Schrift. `.btn--primary:hover` setzte nur `filter` und
+  konnte das nicht ausgleichen.
+
+  **Regel für die Zukunft:** Jede Knopfvariante trägt ihren <b>eigenen</b>
+  Hover-Zustand mit Hintergrund *und* Schriftfarbe, und alle Hover-Regeln
+  enden auf `:not([disabled])`. Dadurch haben sie dieselbe Spezifität, und
+  allein die Reihenfolge in der Datei entscheidet – was auch für Varianten in
+  `chat.css` gilt, die nach `base.css` geladen wird. Wer eine neue Variante
+  ergänzt, muss das Muster übernehmen, sonst gewinnt wieder die Basisregel.
 
 ---
 
@@ -160,8 +172,10 @@ Diese Punkte stimmen nach aktuellem Stand, ändern sich aber erfahrungsgemäß:
   Gespräche aufeinander auf.
 * **Breite Übersichtstabellen** muss man auf dem Handy seitlich schieben. Ein
   Hinweis steht darunter, schön ist es trotzdem nicht.
-* **Keine Barrierefreiheit-Prüfung.** Die Antwortknöpfe sind über die Tastatur
-  erreichbar (Zahlen 1–9), ARIA-Rollen und Vorlese-Unterstützung fehlen.
+* **Barrierefreiheit nur teilweise.** Die Antwortknöpfe sind über die Tastatur
+  erreichbar (Zahlen 1–9 oder Tab), und der Tastaturfokus ist seit der
+  Knopf-Überarbeitung sichtbar (`:focus-visible` mit Akzentring). ARIA-Rollen,
+  Vorlese-Unterstützung und eine Prüfung mit Screenreader fehlen weiterhin.
 * **Der Fortschritt lässt sich nicht einzeln zurücksetzen** – nur der
   Spickzettel hat einen Knopf dafür, die erledigten Gespräche nicht.
 * **Kein Export.** Der Spickzettel lässt sich drucken, aber nicht als Datei

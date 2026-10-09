@@ -373,9 +373,23 @@ AUDIT.chat = (function () {
           gewaehlt[nr] = !gewaehlt[nr];
           knopf.classList.toggle('is-gewaehlt', !!gewaehlt[nr]);
           knopf.firstChild.textContent = gewaehlt[nr] ? '☑' : '☐';
+          zaehlerAktualisieren();
         });
         antworten.appendChild(knopf);
       });
+
+      /* Zeigt an, wie viele Antworten ausgewählt sind, und sperrt
+         die Abgabe, solange gar nichts markiert ist. */
+      function anzahlGewaehlt() {
+        return Object.keys(gewaehlt).filter(function (k) { return gewaehlt[k]; }).length;
+      }
+      function zaehlerAktualisieren() {
+        var n = anzahlGewaehlt();
+        zaehler.textContent = n === 0 ? 'Noch nichts ausgewählt'
+          : (n === 1 ? '1 Antwort ausgewählt' : n + ' Antworten ausgewählt');
+        if (n === 0) pruefen.setAttribute('disabled', 'disabled');
+        else pruefen.removeAttribute('disabled');
+      }
 
       function loesungZeigen() {
         U.clear(antworten);
@@ -393,9 +407,10 @@ AUDIT.chat = (function () {
         });
       }
 
+      var zaehler = U.el('span', { class: 'chat__zaehler' });
       var pruefen = U.el('button', { class: 'btn btn--primary', text: 'Antwort abgeben' });
       pruefen.addEventListener('click', function () {
-        if (!aktiv()) return;
+        if (!aktiv() || pruefen.hasAttribute('disabled')) return;
         var fehlend = 0, zuviel = 0;
         s.optionen.forEach(function (o, nr) {
           if (o.richtig && !gewaehlt[nr]) fehlend++;
@@ -452,7 +467,8 @@ AUDIT.chat = (function () {
           scrollEnde();
         });
       });
-      antworten.appendChild(pruefen);
+      antworten.appendChild(U.el('div', { class: 'chat__abgeben' }, [zaehler, pruefen]));
+      zaehlerAktualisieren();
       scrollEnde();
     }
 

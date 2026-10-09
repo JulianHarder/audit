@@ -21,8 +21,9 @@
   color: var(--text);
   transition: border-color .15s, background .15s, transform .1s;
 }
-.kontakt:hover { border-color: var(--accent-2); background: var(--bg-3); }
-.kontakt:active { transform: scale(.995); }
+.kontakt:hover:not([disabled]) { border-color: var(--accent-2); background: var(--bg-3); }
+.kontakt:active:not([disabled]) { transform: scale(.995); }
+.kontakt[disabled] { opacity: .55; cursor: default; }
 
 .kontakt__bild {
   flex: 0 0 48px;
@@ -63,7 +64,7 @@
   color: var(--text);
   transition: border-color .15s, background .15s;
 }
-.gespraech:hover { border-color: var(--accent-2); background: var(--bg-3); }
+.gespraech:hover:not([disabled]) { border-color: var(--accent-2); background: var(--bg-3); }
 .gespraech__nr {
   flex: 0 0 26px;
   width: 26px; height: 26px;
@@ -222,8 +223,8 @@
   cursor: pointer;
   transition: border-color .13s, background .13s, transform .1s;
 }
-.antwort:hover { border-color: var(--accent); background: var(--bg-4); }
-.antwort:active { transform: scale(.995); }
+.antwort:hover:not([disabled]) { border-color: var(--accent); background: var(--bg-4); }
+.antwort:active:not([disabled]) { transform: scale(.995); }
 .antwort__nr {
   flex: 0 0 20px;
   font-family: var(--mono);
@@ -242,10 +243,33 @@
 }
 .antwort.is-falsch .antwort__nr { border-color: rgba(239,68,68,.4); color: var(--bad); }
 .antwort[disabled] { cursor: default; opacity: .75; }
+.antwort.is-falsch:hover {
+  border-color: rgba(239,68,68,.5);
+  background: rgba(239,68,68,.07);
+}
 
 /* Mehrfachauswahl */
-.antwort.is-gewaehlt { border-color: var(--accent); background: var(--accent-soft); }
+.antwort.is-gewaehlt,
+.antwort.is-gewaehlt:hover:not([disabled]) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
 .antwort.is-gewaehlt .antwort__nr { border-color: var(--accent); color: var(--accent); }
+
+/* Zeile mit Zähler und Abgabeknopf */
+.chat__abgeben {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2px;
+}
+.chat__zaehler {
+  font-size: 12.5px;
+  color: var(--text-mute);
+  flex: 1;
+  min-width: 0;
+}
+.chat__abgeben .btn { flex: 0 0 auto; }
 
 /* Ende eines Gesprächs */
 .ende {
@@ -317,7 +341,11 @@
   color: #fde6bf;
   background: rgba(251, 191, 36, .1);
 }
-.loesung-knopf:hover { background: rgba(251, 191, 36, .18); border-color: var(--warn); }
+.loesung-knopf:hover:not([disabled]) {
+  background: rgba(251, 191, 36, .2);
+  border-color: var(--warn);
+  color: #fff6e6;
+}
 
 /* Gruppenchat: Namen etwas kräftiger, damit die Farbe trägt */
 .blase--sie .blase__name { font-weight: 600; }
