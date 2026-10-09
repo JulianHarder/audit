@@ -274,6 +274,27 @@ AUDIT.firma = (function () {
     return m;
   }
 
+  /* ---------- Zustand der Schutzziele (Station 2 / Ernstfall) ----------
+     1 = unversehrt, 0 = vollständig verletzt. Wird durch Angriffe
+     gesenkt und von heilen() zurückgesetzt.                          */
+
+  function zustandVon(n) {
+    if (!n) return null;
+    var k = kategorie(n);
+    if (k !== 'system' && k !== 'anwendung') return null;
+    return n.zustand || { v: 1, i: 1, a: 1 };
+  }
+
+  function schaden(id, s) {
+    var n = node(id);
+    if (!n) return;
+    n.zustand = n.zustand || { v: 1, i: 1, a: 1 };
+    ZIELE.forEach(function (z) {
+      if (!s[z]) return;
+      n.zustand[z] = Math.max(0, Math.round((n.zustand[z] - s[z]) * 100) / 100);
+    });
+  }
+
   /* ---------- Maßnahmen ---------- */
 
   function hatMassnahme(n, key) {
@@ -312,7 +333,8 @@ AUDIT.firma = (function () {
             (d.kategorie === 'anwendung' ? { v: 'normal', i: 'normal', a: 'normal' } : undefined),
           props: n.props || {},
           massnahmen: n.massnahmen || [],
-          infektion: n.infektion || null
+          infektion: n.infektion || null,
+          zustand: n.zustand || undefined
         };
       }),
       edges: (obj.edges || []).map(function (e) {
@@ -351,6 +373,8 @@ AUDIT.firma = (function () {
     var geaendert = false;
     data.nodes.forEach(function (n) {
       if (n.infektion) { n.infektion = null; geaendert = true; }
+      if (n.zustand) { delete n.zustand; geaendert = true; }
+      if (n._gesperrt) { delete n._gesperrt; geaendert = true; }
     });
     data.edges.forEach(function (e) {
       if (e._infiziert) { delete e._infiziert; geaendert = true; }
@@ -370,6 +394,7 @@ AUDIT.firma = (function () {
     kantenArt: kantenArt, loesche: loesche,
     zoneVon: zoneVon, zonetypVon: zonetypVon, knotenInZone: knotenInZone,
     vererbung: vererbung, schutzbedarfVon: schutzbedarfVon, maxStufe: maxStufe,
+    zustandVon: zustandVon, schaden: schaden,
     hatMassnahme: hatMassnahme, setzeMassnahme: setzeMassnahme,
     massnahmeIrgendwo: massnahmeIrgendwo,
     serialisieren: serialisieren, laden: laden, ladeVorlage: ladeVorlage,

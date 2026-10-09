@@ -182,6 +182,9 @@ AUDIT.main = (function () {
     var letzte = AUDIT.storage.get('letzteFirma', null);
     if (letzte && letzte.nodes && letzte.nodes.length) F.laden(letzte, true);
     else F.laden(AUDIT.data.vorlage, true);
+    /* Mit einer sauberen Firma starten: Simulationsspuren der letzten
+       Sitzung entfernen, gesetzte Maßnahmen bleiben erhalten. */
+    F.heilen();
 
     /* bei jeder Änderung den Stand sichern */
     var timer = null;

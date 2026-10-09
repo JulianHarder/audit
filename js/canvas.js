@@ -243,17 +243,29 @@ AUDIT.createCanvas = function (opts) {
     g.appendChild(U.svg('text', { class: 'node__title', x: 38, y: 20, text: kurz(n.name, 15) }));
     g.appendChild(U.svg('text', { class: 'node__sub', x: 38, y: 34, text: d.label }));
 
-    /* Schutzbedarfs-Balken (Anwendungen + Systeme mit Vererbung) */
-    var sb = F.schutzbedarfVon(n, vererbtCache);
-    if (sb && (modus === 'werkstatt' || modus === 'angriff' || modus === 'ernstfall')) {
-      var zl = ['v', 'i', 'a'];
+    /* Balken unten am Knoten.
+       Werkstatt/Daten: Schutzbedarf (wie hoch muss geschützt werden?)
+       Angriff/Ernstfall: Zustand der Schutzziele (wie stark verletzt?) */
+    var zl = ['v', 'i', 'a'];
+    var zustandsModus = (modus === 'angriff' || modus === 'ernstfall');
+    var sb = zustandsModus ? F.zustandVon(n) : F.schutzbedarfVon(n, vererbtCache);
+    if (sb) {
       for (var i = 0; i < 3; i++) {
         var z = zl[i];
-        var w = U.stufeWert(sb[z]);
         var bx = 10 + i * ((b.w - 24) / 3);
         var bw = (b.w - 24) / 3 - 6;
+        var anteil, klasse;
+        if (zustandsModus) {
+          anteil = sb[z];
+          klasse = anteil >= 0.75 ? 'sb--normal' : (anteil >= 0.4 ? 'sb--hoch' : 'sb--sehrhoch');
+        } else {
+          anteil = U.stufeWert(sb[z]) / 3;
+          klasse = 'sb--' + sb[z];
+        }
         g.appendChild(U.svg('rect', { class: 'sb-bar sb-bar--bg', x: bx, y: b.h - 17, width: bw, height: 6, rx: 2 }));
-        g.appendChild(U.svg('rect', { class: 'sb-bar sb--' + sb[z], x: bx, y: b.h - 17, width: bw * w / 3, height: 6, rx: 2 }));
+        if (anteil > 0) {
+          g.appendChild(U.svg('rect', { class: 'sb-bar ' + klasse, x: bx, y: b.h - 17, width: bw * anteil, height: 6, rx: 2 }));
+        }
         g.appendChild(U.svg('text', { class: 'sb-label', x: bx, y: b.h - 21, text: z.toUpperCase() }));
       }
     }
