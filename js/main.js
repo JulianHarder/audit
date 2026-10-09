@@ -95,8 +95,8 @@ AUDIT.main = (function () {
 
     inner.appendChild(U.el('p', {
       class: 'sub', style: { marginTop: '22px' },
-      html: 'Hinweis: AUDIT ist eine Lernhilfe für die IHK-Prüfung und keine Rechtsberatung. ' +
-        'Die Artikelangaben beziehen sich auf die [[DSGVO]].'
+      html: U.rich('Hinweis: AUDIT ist eine Lernhilfe für die IHK-Prüfung und keine Rechtsberatung. ' +
+        'Die Artikelangaben beziehen sich auf die [[DSGVO]].')
     }));
     return {};
   }
