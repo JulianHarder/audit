@@ -174,18 +174,6 @@ In allen Texten wird `[[Begriff]]` zu einem Lexikon-Link, einfaches HTML wie
 
 ---
 
-## Deployment auf Cloudflare Pages
-
-Statische Seite – kein Build, keine Abhängigkeiten, kein Backend.
-
-1. Repository zu GitHub pushen
-2. Cloudflare: **Workers & Pages → Create → Pages → Connect to Git**
-3. Build-Einstellungen: Framework preset `None`, Build command leer,
-   Build output directory `/`
-4. **Save and Deploy**
-
----
-
 ## Technik
 
 HTML, CSS und Vanilla JavaScript. **Kein Framework, kein Build, keine CDNs,
@@ -194,7 +182,10 @@ keine ES-Module, kein `fetch`** – deshalb läuft die Seite auch per Doppelklic
 
 ---
 
-## Hinweis
+## Hinweise
 
 AUDIT ist eine Lernhilfe für die Prüfung, keine Rechtsberatung. Artikelangaben
 beziehen sich auf die DSGVO, Paragrafen auf deutsches Recht.
+
+Inhalte und Code sind mit Unterstützung von KI (Claude) entstanden und von mir
+geprüft und überarbeitet.
