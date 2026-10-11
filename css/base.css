@@ -463,3 +463,34 @@ table.t th { background: var(--bg-4); color: var(--text-dim); font-weight: 600; 
   .tag { border: 1px solid #999; color: #000; background: #eee; }
   a, .lx { color: #000; text-decoration: none; }
 }
+
+/* ===================== Fußzeile =====================
+
+   Nennt den Urheber und die verwendete Technik. Sitzt unter der
+   Seitenspalte und nimmt deren Breite auf, damit sie nicht aus dem
+   Raster fällt.
+   ==================================================== */
+
+.fuss {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 2px 16px;
+  max-width: var(--spalte);
+  margin: 0 auto;
+  padding: 0 14px 16px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-mute);
+}
+.fuss a {
+  color: var(--text-dim);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+}
+.fuss a:hover { color: var(--text); }
+.fuss__name { color: var(--text-dim); font-weight: 500; }
+.fuss__ganz { white-space: nowrap; }
