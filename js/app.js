@@ -33,6 +33,15 @@ AUDIT.app = (function () {
     AUDIT.storage.set('erledigt', e);
   }
 
+  /* Streicht die uebergebenen Gespraeche aus dem Fortschritt. Alle
+     anderen bleiben stehen – zurueckgesetzt wird immer nur ein
+     Themengebiet. */
+  function vergissErledigt(ids) {
+    var e = erledigte();
+    ids.forEach(function (id) { delete e[id]; });
+    AUDIT.storage.set('erledigt', e);
+  }
+
   function dialogeVon(kontaktKey) {
     return AUDIT.data.dialoge.filter(function (d) { return d.kontakt === kontaktKey; });
   }
@@ -136,17 +145,6 @@ AUDIT.app = (function () {
       text: fertig + ' von ' + gesamt + ' Gesprächen geführt.' +
             (AUDIT.storage.verfuegbar ? '' : ' (Dieser Browser speichert nichts – ' +
              'der Fortschritt gilt nur, solange die Seite offen bleibt.)') }));
-
-    /* Fortschritt verwerfen. Mit Rueckfrage, weil es nicht
-       rueckholbar ist. */
-    var fortschrittDa = fertig > 0 || AUDIT.spickzettel.alle().length > 0;
-    seite.appendChild(U.el('button', {
-      class: 'btn btn--danger btn--sm',
-      text: '↺ Fortschritt zurücksetzen',
-      disabled: fortschrittDa ? null : 'disabled',
-      title: fortschrittDa ? 'Gespräche und Spickzettel löschen' : 'Es ist noch nichts gespeichert',
-      onclick: function () { if (fortschrittDa) fortschrittLoeschenFragen(); }
-    }));
   }
 
   /* ---------- Ansicht: Kontakte eines Themengebiets ---------- */
@@ -202,32 +200,51 @@ AUDIT.app = (function () {
     });
 
     seite.appendChild(U.el('p', { class: 'sub', style: { marginTop: '16px' },
-      text: zaehle(dialThema) + ' von ' + dialThema.length + ' Gesprächen in diesem Gebiet geführt.' }));
+      text: zaehle(dialThema) + ' von ' + dialThema.length + ' Gesprächen in diesem Gebiet geführt.' +
+            (AUDIT.storage.verfuegbar ? '' : ' (Dieser Browser speichert nichts – ' +
+             'der Fortschritt gilt nur, solange die Seite offen bleibt.)') }));
+
+    /* Fortschritt dieses Gebiets verwerfen. Mit Rueckfrage, weil es
+       nicht rueckholbar ist. */
+    var etwasDa = zaehle(dialThema) > 0 || AUDIT.spickzettel.alle(key).length > 0;
+    seite.appendChild(U.el('button', {
+      class: 'btn btn--danger btn--sm',
+      text: '↺ Fortschritt zurücksetzen',
+      disabled: etwasDa ? null : 'disabled',
+      title: etwasDa ? 'Gespräche und Merksätze dieses Gebiets löschen'
+                     : 'In diesem Gebiet ist noch nichts gespeichert',
+      onclick: function () { if (etwasDa) fortschrittLoeschenFragen(key); }
+    }));
   }
 
-  /* ---------- Fortschritt zurücksetzen ---------- */
+  /* ---------- Fortschritt eines Themengebiets zurücksetzen ---------- */
 
-  function fortschrittLoeschenFragen() {
-    var fertig = AUDIT.data.dialoge.filter(function (d) { return istErledigt(d.id); }).length;
-    var saetze = AUDIT.spickzettel.alle().length;
+  function fortschrittLoeschenFragen(key) {
+    var t = AUDIT.data.themenMap[key];
+    if (!t) return;
+    var dial = dialogeVonThema(key);
+    var fertig = zaehle(dial);
+    var saetze = AUDIT.spickzettel.alle(key).length;
 
-    U.modal('Fortschritt wirklich löschen?',
-      '<p>Gelöscht werden:</p>' +
+    U.modal('Fortschritt zurücksetzen?',
+      '<p>Aus <b>' + U.esc(t.name) + '</b> wird gelöscht:</p>' +
       '<ul>' +
       '<li><b>' + fertig + '</b> als geführt markierte ' + (fertig === 1 ? 'Gespräch' : 'Gespräche') + '</li>' +
       '<li><b>' + saetze + '</b> gesammelte ' + (saetze === 1 ? 'Merksatz' : 'Merksätze') + ' im Spickzettel</li>' +
       '</ul>' +
-      '<p class="sub">Das lässt sich nicht rückgängig machen. Die Gespräche selbst ' +
-      'bleiben natürlich erhalten – du fängst nur wieder bei null an.</p>',
+      '<p class="sub">Andere Themengebiete bleiben unberührt. Das lässt sich nicht ' +
+      'rückgängig machen – die Gespräche selbst bleiben natürlich erhalten, du fängst ' +
+      'in diesem Gebiet nur wieder bei null an.</p>',
       [
         { label: 'Abbrechen' },
         {
-          label: 'Ja, alles löschen', danger: true,
+          label: 'Ja, zurücksetzen', danger: true,
           onClick: function (close) {
-            AUDIT.storage.alleLoeschen();
+            vergissErledigt(dial.map(function (d) { return d.id; }));
+            AUDIT.spickzettel.leeren(key);
             close();
-            zeige('themen');
-            U.toast('Fortschritt zurückgesetzt. Viel Erfolg beim zweiten Durchgang.', 'ok');
+            zeige('thema', key);
+            U.toast('„' + U.esc(t.name) + '“ zurückgesetzt. Viel Erfolg beim zweiten Durchgang.', 'ok');
           }
         }
       ]);

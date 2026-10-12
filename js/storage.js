@@ -47,25 +47,6 @@ AUDIT.storage = (function () {
     try { window.localStorage.removeItem(PREFIX + key); } catch (e) {}
   }
 
-  /* ---------- Alles zuruecksetzen ----------
-     Loescht jeden Schluessel mit unserem Praefix: gefuehrte Gespraeche,
-     Spickzettel, Fortschritt. Fremde Eintraege im localStorage bleiben
-     unberuehrt. */
-
-  function alleLoeschen() {
-    fallback = {};
-    if (!verfuegbar) return true;
-    try {
-      var weg = [];
-      for (var i = 0; i < window.localStorage.length; i++) {
-        var k = window.localStorage.key(i);
-        if (k && k.indexOf(PREFIX) === 0) weg.push(k);
-      }
-      weg.forEach(function (k) { window.localStorage.removeItem(k); });
-      return true;
-    } catch (e) { return false; }
-  }
-
   /* ---------- Fortschritt pro Station ---------- */
 
   function fortschritt() { return get('fortschritt', {}); }
@@ -105,7 +86,7 @@ AUDIT.storage = (function () {
 
   return {
     verfuegbar: verfuegbar,
-    get: get, set: set, remove: remove, alleLoeschen: alleLoeschen,
+    get: get, set: set, remove: remove,
     fortschritt: fortschritt, setFortschritt: setFortschritt,
     firmenListe: firmenListe, firmaSpeichern: firmaSpeichern,
     firmaLaden: firmaLaden, firmaLoeschen: firmaLoeschen

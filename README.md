@@ -83,8 +83,10 @@ dieselbe Abfrage.
   gewählt ist
 * Das Lexikon schließt sich bei jedem Wechsel der Ansicht
 * Der Fortschritt wird im Browser gespeichert
-* Der Fortschritt lässt sich auf der Übersicht zurücksetzen – mit Rückfrage,
-  die vorher aufzählt, was gelöscht wird
+* Der Fortschritt lässt sich je Themengebiet zurücksetzen (Knopf unten auf der
+  Gebietsseite) – mit Rückfrage, die vorher aufzählt, was gelöscht wird.
+  Gelöscht werden die geführten Gespräche und die Merksätze **dieses** Gebiets,
+  andere Gebiete bleiben unberührt
 * Die **Zurück-Taste des Browsers** (und die Zurück-Geste auf dem Handy) führt
   eine Ebene höher: vom Gespräch zur Gesprächsliste, von dort zu den Kontakten
   des Gebiets und weiter zur Übersicht
