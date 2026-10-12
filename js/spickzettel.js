@@ -2,6 +2,11 @@
    AUDIT – js/spickzettel.js
    Sammelt die Merksätze aus den Gesprächen. Am Ende hat man
    seinen eigenen Lernzettel – auch zum Ausdrucken.
+
+   Jeder Merksatz merkt sich, aus welchem Themengebiet er stammt
+   (Feld "gebiet"), und der Zettel zeigt immer nur eines davon.
+   Das Feld "thema" daneben ist feiner: das Unterthema des
+   Gesprächs, etwa "Schadsoftware"; danach wird gruppiert.
    =========================================================== */
 window.AUDIT = window.AUDIT || {};
 
@@ -10,7 +15,21 @@ AUDIT.spickzettel = (function () {
   var U = AUDIT.util;
   var SCHLUESSEL = 'spickzettel';
 
-  function alle() { return AUDIT.storage.get(SCHLUESSEL, []); }
+  /* Merksätze, die vor der Einführung der Themengebiete gespeichert
+     wurden, haben kein "gebiet". Sie stammen zwangsläufig aus dem
+     ersten Gebiet und werden ihm zugeschlagen. */
+  function erstesGebiet() {
+    return ((AUDIT.data.themen || [])[0] || {}).key || null;
+  }
+
+  function gebietVon(e) { return e.gebiet || erstesGebiet(); }
+
+  /* Ohne Angabe: alle Merksätze. Mit Angabe: nur die eines Gebiets. */
+  function alle(gebiet) {
+    var liste = AUDIT.storage.get(SCHLUESSEL, []);
+    if (!gebiet) return liste;
+    return liste.filter(function (e) { return gebietVon(e) === gebiet; });
+  }
 
   function hinzu(eintrag) {
     var liste = alle();
@@ -22,27 +41,39 @@ AUDIT.spickzettel = (function () {
     return true;
   }
 
-  function leeren() { AUDIT.storage.set(SCHLUESSEL, []); }
+  /* Ohne Angabe: alles. Mit Angabe: nur die Merksätze eines Gebiets –
+     der Zettel zeigt ja auch nur dieses. */
+  function leeren(gebiet) {
+    if (!gebiet) { AUDIT.storage.set(SCHLUESSEL, []); return; }
+    AUDIT.storage.set(SCHLUESSEL, alle().filter(function (e) {
+      return gebietVon(e) !== gebiet;
+    }));
+  }
 
-  function zeichne(mount) {
+  function zeichne(mount, gebiet) {
     U.clear(mount);
-    var liste = alle();
+    var liste = alle(gebiet);
+    var g = gebiet ? (AUDIT.data.themenMap || {})[gebiet] : null;
 
     mount.appendChild(U.el('h1', { text: '📌 Dein Spickzettel' }));
+    if (g) mount.appendChild(U.el('p', { class: 'sub', text: g.name }));
 
     if (!liste.length) {
       mount.appendChild(U.el('p', { class: 'lead',
         text: 'Noch leer. Jedes Gespräch endet mit einem Merksatz – der landet automatisch hier.' }));
       mount.appendChild(U.el('button', {
         class: 'btn btn--primary', text: 'Zu den Gesprächen',
-        onclick: function () { AUDIT.app.zeige('liste'); }
+        onclick: function () {
+          if (gebiet) AUDIT.app.zeige('thema', gebiet); else AUDIT.app.zeige('themen');
+        }
       }));
       return;
     }
 
     mount.appendChild(U.el('p', { class: 'lead',
       text: (liste.length === 1 ? 'Ein Merksatz' : liste.length + ' Merksätze') +
-        ' aus deinen Gesprächen. Zum Lernen vor der Prüfung – oder ausdrucken.' }));
+        (g ? ' aus „' + g.name + '“' : ' aus deinen Gesprächen') +
+        '. Zum Lernen vor der Prüfung – oder ausdrucken.' }));
 
     var tools = U.el('div', { style: { display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '8px' } });
     tools.appendChild(U.el('button', {
@@ -52,11 +83,16 @@ AUDIT.spickzettel = (function () {
     tools.appendChild(U.el('button', {
       class: 'btn btn--sm', text: 'Leeren',
       onclick: function () {
+        var einer = liste.length === 1;
+        var woher = g ? ' aus „' + U.esc(g.name) + '“' : '';
         U.modal('Spickzettel leeren?',
-          '<p>Alle gesammelten Merksätze werden gelöscht. Sie kommen beim erneuten Durchspielen der Gespräche wieder.</p>',
+          '<p>' + (einer ? 'Der eine Merksatz' + woher + ' wird gelöscht. Er kommt'
+                         : 'Die ' + liste.length + ' Merksätze' + woher + ' werden gelöscht. Sie kommen') +
+          ' beim erneuten Durchspielen der Gespräche wieder.</p>' +
+          (g ? '<p class="sub">Merksätze aus anderen Themengebieten bleiben erhalten.</p>' : ''),
           [{ label: 'Abbrechen' }, {
             label: 'Leeren', danger: true, onClick: function (close) {
-              leeren(); close(); zeichne(mount);
+              leeren(gebiet); close(); zeichne(mount, gebiet);
             }
           }]);
       }

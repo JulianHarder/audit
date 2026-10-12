@@ -258,6 +258,7 @@ AUDIT.chat = (function () {
           if (AUDIT.spickzettel) {
             AUDIT.spickzettel.hinzu({
               text: s.text, thema: dialog.thema,
+              gebiet: (AUDIT.data.themaVonKontakt || {})[dialog.kontakt],
               dialog: dialog.id, titel: dialog.titel
             });
           }

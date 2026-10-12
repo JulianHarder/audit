@@ -12,6 +12,24 @@ AUDIT.lexikon = (function () {
   var panel = null, body = null, suchfeld = null;
   var offen = false;
 
+  /* Das Lexikon zeigt nur die Begriffe des gerade geoeffneten
+     Themengebiets – zu jedem Gebiet gehoeren eigene. app.js meldet das
+     aktuelle Gebiet ueber setzeGebiet(). Ohne Angabe wird alles
+     gezeigt. */
+  var gebiet = null;
+
+  function setzeGebiet(key) {
+    if (key === gebiet) return;
+    gebiet = key || null;
+    if (body) liste(suchfeld ? suchfeld.value : '');
+  }
+
+  function imGebiet(e) { return !gebiet || e.gebiet === gebiet; }
+
+  function eintraegeImGebiet() {
+    return AUDIT.data.lexikon.filter(imGebiet);
+  }
+
   /* ---------- Seitenlauf festhalten ----------
      Auf dem Handy liegt das Lexikon als Vollbild ueber dem Chat. Ohne
      Sperre scrollt das Telefon am Ende der Lexikonliste die Seite
@@ -71,7 +89,8 @@ AUDIT.lexikon = (function () {
   function liste(filter) {
     U.clear(body);
     var f = (filter || '').trim().toLowerCase();
-    var treffer = AUDIT.data.lexikon.filter(function (e) {
+    var vorrat = eintraegeImGebiet();
+    var treffer = vorrat.filter(function (e) {
       if (!f) return true;
       return (e.titel + ' ' + e.key + ' ' + (e.alias || []).join(' ') + ' ' + e.text + ' ' + (e.bsp || ''))
         .toLowerCase().indexOf(f) >= 0;
@@ -84,7 +103,7 @@ AUDIT.lexikon = (function () {
 
     body.appendChild(U.el('p', {
       class: 'sub',
-      text: treffer.length + ' von ' + AUDIT.data.lexikon.length + ' Einträgen'
+      text: treffer.length + ' von ' + vorrat.length + ' Einträgen'
     }));
 
     AUDIT.data.lexikonGruppen.forEach(function (g) {
@@ -151,6 +170,9 @@ AUDIT.lexikon = (function () {
       U.toast('Für <b>' + U.esc(key) + '</b> gibt es noch keinen Lexikon-Eintrag.', 'warn', 2600);
       return;
     }
+    /* Steht der Begriff in einem anderen Gebiet, wird auf dessen Liste
+       umgeschaltet – sonst waere der Eintrag nicht zu sehen. */
+    if (e.gebiet && gebiet && e.gebiet !== gebiet) gebiet = e.gebiet;
     suchfeld.value = '';
     liste('');
     var box = body.querySelector('[data-key="' + cssEsc(e.key) + '"]');
@@ -180,5 +202,5 @@ AUDIT.lexikon = (function () {
     if (e.key === 'Escape' && offen) zu();
   });
 
-  return { auf: auf, zu: zu, umschalten: umschalten, open: open, pruefe: pruefe, neuAufbauen: function () { if (body) liste(suchfeld ? suchfeld.value : ''); } };
+  return { auf: auf, zu: zu, umschalten: umschalten, open: open, pruefe: pruefe, setzeGebiet: setzeGebiet, neuAufbauen: function () { if (body) liste(suchfeld ? suchfeld.value : ''); } };
 })();

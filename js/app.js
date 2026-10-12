@@ -1,7 +1,7 @@
 /* ===========================================================
    AUDIT – js/app.js
-   Navigation: Kontaktliste → Gesprächsliste → Gespräch.
-   Hält den Fortschritt fest und baut die Kopfzeile.
+   Navigation: Themenübersicht → Kontaktliste → Gesprächsliste
+   → Gespräch. Hält den Fortschritt fest und baut die Kopfzeile.
    =========================================================== */
 window.AUDIT = window.AUDIT || {};
 
@@ -11,6 +11,17 @@ AUDIT.app = (function () {
 
   var seite, kopf, kopfName, kopfRolle, kopfZurueck;
   var ansicht = 'liste';
+
+  /* Welches Themengebiet ist gerade offen? Lexikon und Spickzettel
+     zeigen nur, was dazugehoert. Wird beim Zeichnen jeder Ansicht
+     gesetzt, die zu einem Gebiet gehoert, und bleibt danach stehen –
+     so weiss auch der Spickzettel, aus welchem Gebiet er kommt. */
+  var gebiet = null;
+
+  function setzeGebiet(key) {
+    gebiet = key || null;
+    if (AUDIT.lexikon && AUDIT.lexikon.setzeGebiet) AUDIT.lexikon.setzeGebiet(gebiet);
+  }
 
   /* ---------- Fortschritt ---------- */
 
@@ -26,45 +37,86 @@ AUDIT.app = (function () {
     return AUDIT.data.dialoge.filter(function (d) { return d.kontakt === kontaktKey; });
   }
 
+  /* ---------- Themengebiete ---------- */
+
+  /* Die Kontakte eines Gebiets, in der Reihenfolge aus data/themen.js.
+     Unbekannte Schlüssel werden still übersprungen. */
+  function kontakteVon(themaKey) {
+    var t = AUDIT.data.themenMap[themaKey];
+    if (!t) return [];
+    return (t.kontakte || [])
+      .map(function (k) { return AUDIT.data.kontakteMap[k]; })
+      .filter(Boolean);
+  }
+
+  function dialogeVonThema(themaKey) {
+    return kontakteVon(themaKey).reduce(function (alle, k) {
+      return alle.concat(dialogeVon(k.key));
+    }, []);
+  }
+
+  /* Zu welchem Gebiet gehört ein Kontakt? Fällt auf das erste Gebiet
+     zurück, damit die Zurück-Taste auch bei einem Kontakt ohne Zuordnung
+     irgendwo landet. */
+  function themaVonKontakt(kontaktKey) {
+    var key = AUDIT.data.themaVonKontakt[kontaktKey];
+    if (key && AUDIT.data.themenMap[key]) return key;
+    return (AUDIT.data.themen[0] || {}).key || null;
+  }
+
+  function zaehle(dialoge) {
+    return dialoge.filter(function (d) { return istErledigt(d.id); }).length;
+  }
+
   /* ---------- Kopfzeile ---------- */
 
-  function setzeKopf(name, rolle, zurueckFn) {
+  /* ohneWerkzeug blendet Spickzettel und Lexikon aus. Beides gehoert zu
+     einem Themengebiet, auf der Uebersicht darueber hat es nichts zu
+     suchen. */
+  function setzeKopf(name, rolle, zurueckFn, ohneWerkzeug) {
     kopfName.innerHTML = name;
     kopfRolle.textContent = rolle || '';
     kopf.classList.toggle('has-back', !!zurueckFn);
+    kopf.classList.toggle('ohne-werkzeug', !!ohneWerkzeug);
     kopfZurueck.onclick = zurueckFn || null;
   }
 
-  /* ---------- Ansicht: Kontaktliste ---------- */
+  /* ---------- Ansicht: Themenübersicht ---------- */
 
-  function zeigeListe() {
-    ansicht = 'liste';
-    setzeKopf('<b>AUDIT</b>', 'Interaktive Lernplattform', null);
+  function zeigeThemen() {
+    ansicht = 'themen';
+    setzeGebiet(null);
+    setzeKopf('<b>AUDIT</b>', 'Interaktive Lernplattform', null, true);
     U.clear(seite);
 
     var gesamt = AUDIT.data.dialoge.length;
-    var fertig = AUDIT.data.dialoge.filter(function (d) { return istErledigt(d.id); }).length;
+    var fertig = zaehle(AUDIT.data.dialoge);
 
-    seite.appendChild(U.el('h1', { text: 'Deine Kollegen schreiben dir' }));
+    seite.appendChild(U.el('h1', { text: 'Wähle ein Themengebiet' }));
     seite.appendChild(U.el('p', { class: 'lead',
-      text: 'Du bist neu bei der Rampe 7 Logistik GmbH. Wähle jemanden aus – ihr unterhaltet euch, ' +
-            'du entscheidest, und du bekommst sofort die Begründung dazu.' }));
+      text: 'Jedes Gebiet hat eigene Kolleginnen und Kollegen, die dir schreiben. ' +
+            'Du entscheidest, und du bekommst sofort die Begründung dazu.' }));
 
-    AUDIT.data.kontakte.forEach(function (k) {
-      var dial = dialogeVon(k.key);
-      var fert = dial.filter(function (d) { return istErledigt(d.id); }).length;
+    AUDIT.data.themen.forEach(function (t) {
+      var kontakte = kontakteVon(t.key);
+      var dial = dialogeVonThema(t.key);
+      var fert = zaehle(dial);
       var quote = dial.length ? fert / dial.length : 0;
 
       var karte = U.el('button', {
-        class: 'kontakt' + (dial.length && fert === dial.length ? ' is-fertig' : ''),
-        onclick: function () { if (dial.length) zeige('kontakt', k.key); }
+        class: 'kontakt kontakt--thema' + (dial.length && fert === dial.length ? ' is-fertig' : ''),
+        onclick: function () { if (dial.length) zeige('thema', t.key); }
       });
-      karte.appendChild(U.el('div', { class: 'kontakt__bild', text: k.bild }));
+      karte.appendChild(U.el('div', { class: 'kontakt__bild', text: t.bild }));
 
       var mitte = U.el('div', { class: 'kontakt__mitte' });
-      mitte.appendChild(U.el('div', { class: 'kontakt__name', text: k.name }));
-      mitte.appendChild(U.el('div', { class: 'kontakt__rolle', text: k.rolle }));
-      mitte.appendChild(U.el('div', { class: 'kontakt__themen', text: k.themen }));
+      mitte.appendChild(U.el('div', { class: 'kontakt__name', text: t.name }));
+      mitte.appendChild(U.el('div', { class: 'kontakt__rolle', text: t.kurz }));
+      mitte.appendChild(U.el('div', { class: 'kontakt__themen',
+        text: dial.length
+          ? kontakte.length + (kontakte.length === 1 ? ' Gesprächspartner' : ' Gesprächspartner') +
+            ' · ' + dial.length + (dial.length === 1 ? ' Gespräch' : ' Gespräche')
+          : 'Die Gespräche entstehen gerade.' }));
       karte.appendChild(mitte);
 
       var rechts = U.el('div', { class: 'kontakt__rechts' });
@@ -97,6 +149,62 @@ AUDIT.app = (function () {
     }));
   }
 
+  /* ---------- Ansicht: Kontakte eines Themengebiets ---------- */
+
+  function zeigeThema(key) {
+    ansicht = 'thema';
+    var t = AUDIT.data.themenMap[key];
+    if (!t) { zeige('themen'); return; }   /* unbekanntes Gebiet in der Adresse */
+
+    /* In der Kopfzeile steht das Gebiet ohne Emoji und, wenn vorhanden, in
+       der Kurzfassung t.kopf: auf dem Handy bleiben neben Zurueck-Taste und
+       den beiden Knoepfen nur rund 230 Pixel. Darunter der Stand statt der
+       Kurzbeschreibung – die steht schon auf der Uebersichtskarte. */
+    setzeGebiet(key);
+    var dialThema = dialogeVonThema(key);
+    setzeKopf(U.esc(t.kopf || t.name),
+      zaehle(dialThema) + ' von ' + dialThema.length + ' Gesprächen',
+      function () { zeige('themen'); });
+    U.clear(seite);
+
+    seite.appendChild(U.el('h1', { text: 'Deine Kollegen schreiben dir' }));
+    if (t.vorstellung) seite.appendChild(U.el('p', { class: 'lead', text: t.vorstellung }));
+
+    var kontakte = kontakteVon(key);
+    kontakte.forEach(function (k) {
+      var dial = dialogeVon(k.key);
+      var fert = zaehle(dial);
+      var quote = dial.length ? fert / dial.length : 0;
+
+      var karte = U.el('button', {
+        class: 'kontakt' + (dial.length && fert === dial.length ? ' is-fertig' : ''),
+        onclick: function () { if (dial.length) zeige('kontakt', k.key); }
+      });
+      karte.appendChild(U.el('div', { class: 'kontakt__bild', text: k.bild }));
+
+      var mitte = U.el('div', { class: 'kontakt__mitte' });
+      mitte.appendChild(U.el('div', { class: 'kontakt__name', text: k.name }));
+      mitte.appendChild(U.el('div', { class: 'kontakt__rolle', text: k.rolle }));
+      mitte.appendChild(U.el('div', { class: 'kontakt__themen', text: k.themen }));
+      karte.appendChild(mitte);
+
+      var rechts = U.el('div', { class: 'kontakt__rechts' });
+      rechts.appendChild(U.el('div', { class: 'kontakt__zahl',
+        text: dial.length ? fert + ' / ' + dial.length : 'bald' }));
+      if (dial.length) {
+        rechts.appendChild(U.el('div', { class: 'bar kontakt__bar' },
+          U.el('div', { class: 'bar__fill', style: { width: (quote * 100) + '%' } })));
+      }
+      karte.appendChild(rechts);
+
+      if (!dial.length) karte.setAttribute('disabled', 'disabled');
+      seite.appendChild(karte);
+    });
+
+    seite.appendChild(U.el('p', { class: 'sub', style: { marginTop: '16px' },
+      text: zaehle(dialThema) + ' von ' + dialThema.length + ' Gesprächen in diesem Gebiet geführt.' }));
+  }
+
   /* ---------- Fortschritt zurücksetzen ---------- */
 
   function fortschrittLoeschenFragen() {
@@ -118,7 +226,7 @@ AUDIT.app = (function () {
           onClick: function (close) {
             AUDIT.storage.alleLoeschen();
             close();
-            zeige('liste');
+            zeige('themen');
             U.toast('Fortschritt zurückgesetzt. Viel Erfolg beim zweiten Durchgang.', 'ok');
           }
         }
@@ -130,8 +238,10 @@ AUDIT.app = (function () {
   function zeigeKontakt(key) {
     ansicht = 'kontakt';
     var k = AUDIT.data.kontakteMap[key];
-    if (!k) { zeige('liste'); return; }   /* unbekannter Kontakt in der Adresse */
-    setzeKopf(k.bild + ' ' + U.esc(k.name), k.rolle, function () { zeige('liste'); });
+    if (!k) { zeige('themen'); return; }   /* unbekannter Kontakt in der Adresse */
+    var thema = themaVonKontakt(key);
+    setzeGebiet(thema);
+    setzeKopf(k.bild + ' ' + U.esc(k.name), k.rolle, function () { zeige('thema', thema); });
     U.clear(seite);
 
     seite.appendChild(U.el('p', { class: 'lead', text: k.vorstellung }));
@@ -163,8 +273,9 @@ AUDIT.app = (function () {
   function zeigeChat(id) {
     ansicht = 'chat';
     var d = AUDIT.data.dialoge.filter(function (x) { return x.id === id; })[0];
-    if (!d) { zeige('liste'); return; }   /* unbekanntes Gespräch in der Adresse */
+    if (!d) { zeige('themen'); return; }   /* unbekanntes Gespräch in der Adresse */
     var k = AUDIT.data.kontakteMap[d.kontakt] || {};
+    setzeGebiet(themaVonKontakt(d.kontakt));
     setzeKopf(k.bild + ' ' + U.esc(k.name), d.titel, function () { zeige('kontakt', d.kontakt); });
     U.clear(seite);
 
@@ -194,24 +305,34 @@ AUDIT.app = (function () {
 
   /* ---------- Ansicht: Spickzettel ---------- */
 
-  function zeigeZettel() {
+  function zeigeZettel(param) {
     ansicht = 'zettel';
-    setzeKopf('📌 Spickzettel', 'deine gesammelten Merksätze', function () { zeige('liste'); });
+    /* Das Gebiet steht in der Adresse (#/zettel/sicherheit). Fehlt es –
+       etwa bei einem alten Lesezeichen –, wird das zuletzt geoeffnete
+       genommen, sonst das erste. */
+    var key = (param && AUDIT.data.themenMap[param]) ? param
+            : (gebiet || ((AUDIT.data.themen[0] || {}).key || null));
+    setzeGebiet(key);
+    var t = key ? AUDIT.data.themenMap[key] : null;
+    setzeKopf('📌 Spickzettel', t ? t.name : 'deine gesammelten Merksätze',
+      function () { if (key) zeige('thema', key); else zeige('themen'); });
     U.clear(seite);
-    AUDIT.spickzettel.zeichne(seite);
+    AUDIT.spickzettel.zeichne(seite, key);
   }
 
   /* ---------- Adresszeile und Zurück-Taste ----------
-     Die Ansicht steht in der Adresszeile (#/k/sabrina, #/c/sab-01).
+     Die Ansicht steht in der Adresszeile (#/t/sicherheit, #/k/sabrina,
+     #/c/sab-01).
      Dadurch funktioniert die Zurück-Taste des Browsers – auf dem
      Handy die natürliche Geste – und ein Gespräch lässt sich direkt
      verlinken. Ein Hash aus einer früheren Fassung (etwa #angriff
      aus der alten Stationsansicht) wird beim Start entfernt. */
 
   function hashFuer(was, param) {
+    if (was === 'thema') return '#/t/' + param;
     if (was === 'kontakt') return '#/k/' + param;
     if (was === 'chat') return '#/c/' + param;
-    if (was === 'zettel') return '#/zettel';
+    if (was === 'zettel') return param ? '#/zettel/' + param : '#/zettel';
     return '#/';
   }
 
@@ -219,20 +340,27 @@ AUDIT.app = (function () {
   function routeLesen() {
     var h = (window.location.hash || '').replace(/^#\/?/, '');
     var teile = h.split('/').filter(Boolean);
-    if (!teile.length) return { was: 'liste' };
+    if (!teile.length) return { was: 'themen' };
+    if (teile[0] === 't' && teile[1]) return { was: 'thema', param: teile[1] };
     if (teile[0] === 'k' && teile[1]) return { was: 'kontakt', param: teile[1] };
     if (teile[0] === 'c' && teile[1]) return { was: 'chat', param: teile[1] };
-    if (teile[0] === 'zettel') return { was: 'zettel' };
+    if (teile[0] === 'zettel') return { was: 'zettel', param: teile[1] || null };
     return null;
   }
 
-  /* Nur zeichnen, ohne die Adresszeile anzufassen */
+  /* Nur zeichnen, ohne die Adresszeile anzufassen.
+     Das Lexikon wird bei jedem Wechsel geschlossen – auch beim Zurueck
+     ueber die Browser-Taste. Sonst bliebe es ueber der neuen Ansicht
+     stehen. Es muss vor dem Hochscrollen zu, weil es beim Schliessen
+     die gemerkte Position wiederherstellt. */
   function zeichne(was, param) {
+    if (AUDIT.lexikon && AUDIT.lexikon.zu) AUDIT.lexikon.zu();
     window.scrollTo(0, 0);
-    if (was === 'kontakt') zeigeKontakt(param);
+    if (was === 'thema') zeigeThema(param);
+    else if (was === 'kontakt') zeigeKontakt(param);
     else if (was === 'chat') zeigeChat(param);
-    else if (was === 'zettel') zeigeZettel();
-    else zeigeListe();
+    else if (was === 'zettel') zeigeZettel(param);
+    else zeigeThemen();
   }
 
   var selbstGesetzt = false;
@@ -253,7 +381,7 @@ AUDIT.app = (function () {
   function aufHashwechsel() {
     if (selbstGesetzt) { selbstGesetzt = false; return; }
     var r = routeLesen();
-    if (!r) { zeige('liste'); return; }
+    if (!r) { zeige('themen'); return; }
     zeichne(r.was, r.param);
   }
 
@@ -268,7 +396,8 @@ AUDIT.app = (function () {
       AUDIT.lexikon.umschalten();
     });
     document.getElementById('btnZettel').addEventListener('click', function () {
-      if (ansicht === 'zettel') zeige('liste'); else zeige('zettel');
+      if (ansicht === 'zettel') { if (gebiet) zeige('thema', gebiet); else zeige('themen'); }
+      else zeige('zettel', gebiet);
     });
 
     /* Tastatur: 1–4 wählt eine Antwort */
@@ -288,17 +417,20 @@ AUDIT.app = (function () {
     if (!start) {
       try { history.replaceState(null, '', window.location.pathname + window.location.search); }
       catch (e) { window.location.hash = ''; }
-      zeigeListe();
+      zeigeThemen();
     } else if (start.was === 'chat' &&
                !AUDIT.data.dialoge.filter(function (d) { return d.id === start.param; })[0]) {
-      zeige('liste');
+      zeige('themen');
     } else if (start.was === 'kontakt' && !AUDIT.data.kontakteMap[start.param]) {
-      zeige('liste');
+      zeige('themen');
+    } else if (start.was === 'thema' && !AUDIT.data.themenMap[start.param]) {
+      zeige('themen');
     } else {
       zeichne(start.was, start.param);
     }
 
-    console.info('AUDIT bereit.', AUDIT.data.dialoge.length, 'Gespräche,',
+    console.info('AUDIT bereit.', AUDIT.data.themen.length, 'Themengebiete,',
+      AUDIT.data.dialoge.length, 'Gespräche,',
       AUDIT.data.lexikon.length, 'Lexikoneinträge.');
   }
 

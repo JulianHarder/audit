@@ -7,6 +7,13 @@ Kollegen schreiben dir: eine verdächtige Mail, eine Kundenanfrage, ein Vorfall.
 Du entscheidest per Auswahl und bekommst sofort die Begründung – in der Sprache,
 die in der Klausur erwartet wird.
 
+Die Navigation hat vier Ebenen:
+
+```
+Themenübersicht  →  Gesprächspartner  →  Gespräche  →  Gespräch
+   #/                 #/t/sicherheit      #/k/tim      #/c/tim-03
+```
+
 Das Format ist unabhängig vom Thema: Gespräche, Lexikon und Merksätze liegen in
 eigenen Dateien unter `data/`, getrennt vom Programm. Weitere Themengebiete
 kommen als zusätzliche Dateien dazu. Den Anfang macht **Datenschutz,
@@ -55,7 +62,7 @@ dieselbe Abfrage.
 
 ## Bedienung
 
-* Kontakt antippen → Gespräch wählen → los
+* Themengebiet antippen → Kontakt antippen → Gespräch wählen → los
 * Nachrichten erscheinen nacheinander; **in den Verlauf klicken** überspringt das Warten
 * Antwort per Klick oder mit den **Tasten 1–9**
 * Falsch gewählt? Die Begründung erscheint, die Option wird ausgegraut, du
@@ -65,12 +72,19 @@ dieselbe Abfrage.
   „falsch"
 * Nach **drei Fehlversuchen** erscheint ein Knopf **💡 Lösung zeigen**: Die
   richtige Antwort wird genannt und erklärt, dann geht es weiter
-* Fachbegriffe sind <u>markiert</u> und öffnen das **Lexikon** (📖 oben rechts, 131 Einträge mit Suche)
+* Fachbegriffe sind <u>markiert</u> und öffnen das **Lexikon** (📖 oben rechts, mit Suche)
 * Jedes Gespräch endet mit einem Merksatz → landet automatisch im **Spickzettel**
   (📌 oben rechts, nach Themen sortiert, druckbar)
+* Lexikon und Spickzettel zeigen immer nur das **geöffnete Themengebiet**. Auf
+  der Übersicht darüber sind beide Knöpfe ausgeblendet, weil dort kein Gebiet
+  gewählt ist
+* Das Lexikon schließt sich bei jedem Wechsel der Ansicht
 * Der Fortschritt wird im Browser gespeichert
+* Der Fortschritt lässt sich auf der Übersicht zurücksetzen – mit Rückfrage,
+  die vorher aufzählt, was gelöscht wird
 * Die **Zurück-Taste des Browsers** (und die Zurück-Geste auf dem Handy) führt
   eine Ebene höher: vom Gespräch zur Gesprächsliste, von dort zu den Kontakten
+  des Gebiets und weiter zur Übersicht
 * Die Ansicht steht in der Adresszeile, zum Beispiel `#/c/sab-01` – so lässt
   sich ein einzelnes Gespräch direkt aufrufen oder als Lesezeichen ablegen
 
@@ -113,13 +127,14 @@ audit/
 │   ├── base.css                Farben, Kopfzeile, Karten, Lexikon, Druckansicht
 │   └── chat.css                Kontaktliste, Sprechblasen, Antwortknöpfe
 ├── data/                       nur Inhalte – hier ergänzt und korrigiert man
+│   ├── themen.js               die Themengebiete, oberste Ebene
 │   ├── kontakte.js             die fünf Gesprächspartner
 │   ├── dialoge-sabrina.js      IT: Schadsoftware und Schutzmaßnahmen
 │   ├── dialoge-dsb.js          Datenschutzrecht
 │   ├── dialoge-chefin.js       Schutzziele, Schutzbedarf, Rollen
 │   ├── dialoge-tim.js          Begriffe, Kontrollarten, Betroffenenrechte
 │   ├── dialoge-notfall.js      Gruppenchat: Ernstfälle (mehrere Sprecher)
-│   ├── lexikon.js              131 Kurzdefinitionen
+│   ├── lexikon.js              Kurzdefinitionen, je mit gebiet
 │   ├── schadsoftware.js        \
 │   ├── massnahmen.js            |  Nachschlagewerke: liefern die
 │   ├── dsgvo.js                 |  Übersichtstabellen, die mitten
@@ -167,12 +182,28 @@ AUDIT.data.dialoge.push({
 
 ### Ein neues Themengebiet anlegen
 
-Dasselbe Muster, nur in neuen Dateien: Gesprächspartner in `data/kontakte.js`
-ergänzen, eine `data/dialoge-<name>.js` mit den Gesprächen anlegen, Begriffe in
-`data/lexikon.js` nachtragen und beides in `index.html` einbinden. Am Programm
-selbst ist dafür nichts zu ändern – außer man möchte eine **neue Art von
-Übersichtstabelle**, dann kommt ein weiterer Fall in `karteInhalt()` in
+1. Eintrag in `data/themen.js` anhängen – `key`, `name`, `kopf` (Kurzfassung für
+   die Kopfzeile), `bild`, `kurz`, `vorstellung` und die Liste der `kontakte`
+2. Die Gesprächspartner in `data/kontakte.js` ergänzen
+3. Eine `data/dialoge-<name>.js` mit den Gesprächen anlegen und in `index.html`
+   einbinden
+4. Für die Fachbegriffe eine eigene Lexikondatei nach dem Muster von
+   `data/lexikon.js` anlegen: Gruppennamen an `AUDIT.data.lexikonGruppen`
+   anhängen, die Einträge an `AUDIT.data.lexikon`, dort `gebiet` auf den
+   eigenen Schlüssel setzen und zum Schluss `AUDIT.data.lexikonIndizieren()`
+   aufrufen
+
+Damit filtern Lexikon und Spickzettel von allein: Beide zeigen nur, was zum
+gerade geöffneten Gebiet gehört. Die Merksätze bekommen ihr Gebiet beim
+Sammeln automatisch über den Gesprächspartner.
+
+Am Programm selbst ist dafür nichts zu ändern – außer man möchte eine **neue Art
+von Übersichtstabelle**, dann kommt ein weiterer Fall in `karteInhalt()` in
 `js/chat.js` dazu.
+
+Ein Gebiet, zu dem es noch keine Gespräche gibt, erscheint in der Übersicht als
+„bald" und lässt sich nicht öffnen – man kann es also schon eintragen, während
+die Inhalte noch entstehen.
 
 **Schritt-Typen:** `nachricht` · `frage` (genau eine richtige) · `mehrfach`
 (alle richtigen ankreuzen) · `karte` (Tabelle aus einer `data/`-Datei über

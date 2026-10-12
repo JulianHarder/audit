@@ -46,6 +46,18 @@
 .kontakt__bar { width: 62px; margin-top: 5px; }
 .kontakt.is-fertig .kontakt__bild { border-color: var(--ok); }
 
+/* Karte eines Themengebiets: gleicher Aufbau wie ein Kontakt,
+   nur mit groesserem Bild und Namen – es ist die oberste Ebene. */
+.kontakt--thema { padding: 15px; }
+.kontakt--thema .kontakt__bild {
+  flex-basis: 54px;
+  width: 54px;
+  height: 54px;
+  font-size: 27px;
+  border-radius: var(--r);
+}
+.kontakt--thema .kontakt__name { font-size: 17px; }
+
 /* ===================== Gesprächsliste ===================== */
 
 .gespraech {
@@ -315,6 +327,7 @@
   .blase { max-width: 92%; font-size: 15px; }
   .antwort { font-size: 15px; padding: 13px 13px; }
   .kontakt__bild { flex-basis: 42px; width: 42px; height: 42px; font-size: 21px; }
+  .kontakt--thema .kontakt__bild { flex-basis: 48px; width: 48px; height: 48px; font-size: 24px; }
   .lexikon { width: 100%; }
 }
 

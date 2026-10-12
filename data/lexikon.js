@@ -1,8 +1,14 @@
 /* ===========================================================
    AUDIT – data/lexikon.js
-   Prüfungsnahe Kurzdefinitionen zu allen Themen.
+   Prüfungsnahe Kurzdefinitionen zum Themengebiet "sicherheit".
    Jeder Eintrag: key (eindeutig, wird von [[key]] verlinkt),
                   gruppe, text, bsp, norm, merk, alias
+                  gebiet (wird unten fuer alle gesetzt)
+
+   Ein weiteres Themengebiet bekommt eine eigene Datei nach diesem
+   Muster: Gruppennamen an AUDIT.data.lexikonGruppen anhaengen, die
+   Eintraege an AUDIT.data.lexikon, dort ein eigenes gebiet setzen und
+   zum Schluss AUDIT.data.lexikonIndizieren() aufrufen.
    =========================================================== */
 window.AUDIT = window.AUDIT || {};
 AUDIT.data = AUDIT.data || {};
@@ -489,13 +495,21 @@ AUDIT.data.lexikon = [
     bsp: 'Lizenzmanagement schafft Überblick über installierte und bezahlte Software.' }
 ];
 
-/* Nachschlagewerk: key und alias -> Eintrag (klein geschrieben) */
+/* Alle Eintraege dieser Datei gehoeren zum Themengebiet "sicherheit".
+   Dadurch zeigt das Lexikon nur, was zum geoeffneten Gebiet passt. */
+AUDIT.data.lexikon.forEach(function (e) { if (!e.gebiet) e.gebiet = 'sicherheit'; });
+
+/* Nachschlagewerk: key und alias -> Eintrag (klein geschrieben).
+   Laesst sich erneut aufrufen, wenn eine weitere Lexikondatei Eintraege
+   angehaengt hat. */
 AUDIT.data.lexikonIndex = {};
-(function () {
+AUDIT.data.lexikonIndizieren = function () {
+  AUDIT.data.lexikonIndex = {};
   function reg(k, e) { AUDIT.data.lexikonIndex[String(k).toLowerCase()] = e; }
   AUDIT.data.lexikon.forEach(function (e) {
     e.titel = e.titel || e.key;
     reg(e.key, e);
     (e.alias || []).forEach(function (a) { reg(a, e); });
   });
-})();
+};
+AUDIT.data.lexikonIndizieren();

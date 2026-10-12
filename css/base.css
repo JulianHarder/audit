@@ -150,6 +150,9 @@ body::after {
   text-overflow: ellipsis;
 }
 .kopf__tools { display: flex; gap: 4px; flex: 0 0 auto; }
+/* Uebersicht: Spickzettel und Lexikon gehoeren zu einem Themengebiet
+   und werden eine Ebene darueber ausgeblendet. */
+.kopf.ohne-werkzeug .kopf__tools { display: none; }
 
 /* ===================== Seite ===================== */
 
