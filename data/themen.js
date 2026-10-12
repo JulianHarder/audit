@@ -37,6 +37,16 @@ AUDIT.data.themen = [
     vorstellung: 'Du bist neu bei der Rampe 7 Logistik GmbH. Wähle jemanden aus – ihr unterhaltet euch, ' +
                  'du entscheidest, und du bekommst sofort die Begründung dazu.',
     kontakte: ['sabrina', 'dsb', 'chefin', 'tim', 'notfall']
+  },
+  {
+    key: 'krypto',
+    name: 'Verschlüsselung und Kryptographie',
+    kopf: 'Verschlüsselung',
+    bild: '🔑',
+    kurz: 'Symmetrisch, asymmetrisch, hybrid, Hashverfahren und digitale Signatur',
+    vorstellung: 'Rampe 7 stellt die Verschlüsselung um. Vier Leute ziehen dich hinein – ' +
+                 'du entscheidest mit, und du bekommst sofort die Begründung dazu.',
+    kontakte: ['nadja', 'berater', 'projekt', 'jonas', 'kryptoalarm']
   }
 ];
 

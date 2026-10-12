@@ -18,7 +18,12 @@ Das Format ist unabhängig vom Thema: Gespräche, Lexikon und Merksätze liegen 
 eigenen Dateien unter `data/`, getrennt vom Programm. Weitere Themengebiete
 kommen als zusätzliche Dateien dazu. Den Anfang macht **Datenschutz,
 Informationssicherheit und Compliance** (Fachinformatiker, Modul IV,
-IHK-Prüfung) – darauf beziehen sich die folgenden Abschnitte.
+IHK-Prüfung). Dazugekommen ist **Verschlüsselung und Kryptographie**.
+
+| Themengebiet | Gesprächspartner | Gespräche |
+|---|---|---|
+| IT-Sicherheit und Datenschutz | 5 | 33 |
+| Verschlüsselung und Kryptographie | 5 | 21 |
 
 Eine Sache pro Bildschirm. Kein Drag & Drop, kein Zoom, keine Einarbeitung.
 Funktioniert am Rechner und auf dem Handy.
@@ -42,6 +47,8 @@ Dann `http://localhost:8000` aufrufen. Getestet in Chrome, Edge und Firefox.
 
 ## Die Gesprächspartner
 
+### Themengebiet „IT-Sicherheit und Datenschutz"
+
 | Kontakt | Anrede | Ton | Themen | Gespräche |
 |---|---|---|---|---|
 | **Sabrina Köster** | duzt dich | entspannt, aber sachlich | Schadsoftware, Schutzmaßnahmen, Netzwerkschutz, Homeoffice | 8 |
@@ -53,8 +60,19 @@ Dann `http://localhost:8000` aufrufen. Getestet in Chrome, Edge und Firefox.
 Zusammen **33 Gespräche** mit **210 Entscheidungen**. Jedes dauert vier bis
 sieben Minuten.
 
-Jede Person hat eine eigene Sprechweise – das ist Absicht: Bei Tim **erklärst du**,
-bei Frau Hagedorn **berichtest du**, bei Herrn Olschewski **arbeitest du einen Fall
+### Themengebiet „Verschlüsselung und Kryptographie"
+
+| Kontakt | Anrede | Ton | Themen | Gespräche |
+|---|---|---|---|---|
+| **Nadja Reinhardt** | duzt dich | knapp und sachlich | Symmetrisch, asymmetrisch, hybrid, Schlüsselaustausch, Transport- und Ende-zu-Ende | 5 |
+| **Herr Baumgart** | duzt dich | genau, legt Wert auf Begriffe | Hashverfahren, Passwortspeicherung, HMAC, digitale Signatur, Zertifikate und PKI | 5 |
+| **Frau Teichmann** | siezt dich | will Entscheidungen, keine Theorie | Verfahrensauswahl, Altlasten, DSGVO-Bezug, Grenzen der Verschlüsselung | 4 |
+| **Jonas** | duzt dich | 1. Lehrjahr, ratlos, Emojis | Klartext und Geheimtext, Caesar, Kerckhoffs, Grundbegriffe | 4 |
+| **#krypto-alarm** | Gruppenchat | mehrere Sprecher, farblich getrennt | Falsche Prüfsumme, abgelaufenes Zertifikat, geleakte Passwortdatenbank | 3 |
+
+Jede Person hat eine eigene Sprechweise – das ist Absicht: Bei Tim und Jonas
+**erklärst du**, bei Frau Hagedorn und Frau Teichmann **entscheidest und
+begründest du**, bei Herrn Olschewski und Herrn Baumgart **arbeitest du einen Fall
 durch**. Derselbe Stoff aus drei Richtungen bleibt besser hängen als dreimal
 dieselbe Abfrage.
 
@@ -139,7 +157,15 @@ audit/
 │   ├── dialoge-chefin.js       Schutzziele, Schutzbedarf, Rollen
 │   ├── dialoge-tim.js          Begriffe, Kontrollarten, Betroffenenrechte
 │   ├── dialoge-notfall.js      Gruppenchat: Ernstfälle (mehrere Sprecher)
+│   ├── dialoge-nadja.js        Krypto: Verfahren im laufenden Betrieb
+│   ├── dialoge-berater.js      Krypto: Hash, Signatur, Zertifikate
+│   ├── dialoge-projekt.js      Krypto: Auswahl, Altlasten, Grenzen
+│   ├── dialoge-jonas.js        Krypto: Grundbegriffe (du erklärst)
+│   ├── dialoge-kryptoalarm.js  Krypto: Gruppenchat mit drei Fällen
 │   ├── lexikon.js              Kurzdefinitionen, je mit gebiet
+│   ├── lexikon-krypto.js       Kurzdefinitionen zum Themengebiet krypto
+│   ├── kryptoverfahren.js      Tabellen: symmetrisch, asymmetrisch,
+│   │                           hybrid, Hashverfahren
 │   ├── schadsoftware.js        \
 │   ├── massnahmen.js            |  Nachschlagewerke: liefern die
 │   ├── dsgvo.js                 |  Übersichtstabellen, die mitten

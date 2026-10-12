@@ -24,7 +24,14 @@ AUDIT.lexikon = (function () {
     if (body) liste(suchfeld ? suchfeld.value : '');
   }
 
-  function imGebiet(e) { return !gebiet || e.gebiet === gebiet; }
+  /* Ein Eintrag kann zu mehreren Gebieten gehoeren – Grundbegriffe wie
+     "Verschluesselung" braucht sowohl das Sicherheits- als auch das
+     Kryptographie-Gebiet. Dann steht in gebiet eine Liste. */
+  function imGebiet(e) {
+    if (!gebiet) return true;
+    if (Array.isArray(e.gebiet)) return e.gebiet.indexOf(gebiet) >= 0;
+    return e.gebiet === gebiet;
+  }
 
   function eintraegeImGebiet() {
     return AUDIT.data.lexikon.filter(imGebiet);
@@ -141,7 +148,9 @@ AUDIT.lexikon = (function () {
     }
     /* Steht der Begriff in einem anderen Gebiet, wird auf dessen Liste
        umgeschaltet – sonst waere der Eintrag nicht zu sehen. */
-    if (e.gebiet && gebiet && e.gebiet !== gebiet) gebiet = e.gebiet;
+    if (e.gebiet && gebiet && !imGebiet(e)) {
+      gebiet = Array.isArray(e.gebiet) ? e.gebiet[0] : e.gebiet;
+    }
     suchfeld.value = '';
     liste('');
     var box = body.querySelector('[data-key="' + cssEsc(e.key) + '"]');

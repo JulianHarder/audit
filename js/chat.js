@@ -43,6 +43,12 @@ AUDIT.chat = (function () {
         return liste.filter(function (x) { return x[mapKey || 'key'] === k; })[0];
       }).filter(Boolean);
     }
+    /* "Ja" gruen, "Nein" rot, alles dazwischen (z. B. "Veraltet") gelb */
+    function sicherTag(wert) {
+      var w = String(wert || '');
+      var art = /^ja/i.test(w) ? 'ok' : (/^nein/i.test(w) ? 'bad' : 'hoch');
+      return '<span class="tag tag--' + art + '">' + U.esc(w) + '</span>';
+    }
     function zielTags(arr) {
       if (!arr || !arr.length) return '<span class="tag">–</span>';
       return arr.map(function (z) { return '<span class="tag tag--' + z + '">' + z.toUpperCase() + '</span>'; }).join(' ');
@@ -104,6 +110,32 @@ AUDIT.chat = (function () {
         return tabelle(['Rolle', 'Aufgabe'],
           waehle(D.figuren).map(function (f) {
             return ['<b>' + U.esc(f.icon + ' ' + f.name) + '</b>', U.esc(f.kurz)];
+          }));
+
+      case 'kryptosymmetrisch':
+        return tabelle(['Verfahren', 'Schlüssellänge', 'Einsatz', 'Heute sicher?'],
+          waehle(D.kryptosymmetrisch).map(function (v) {
+            return ['<b>' + U.esc(v.name) + '</b>', U.esc(v.laenge), v.einsatz,
+                    sicherTag(v.sicher)];
+          }));
+
+      case 'kryptoasymmetrisch':
+        return tabelle(['Verfahren', 'Grundlage', 'Einsatz'],
+          waehle(D.kryptoasymmetrisch).map(function (v) {
+            return ['<b>' + U.esc(v.name) + '</b>', U.esc(v.grundlage), v.einsatz];
+          }));
+
+      case 'kryptohybrid':
+        return tabelle(['Verfahren', 'Einsatz'],
+          waehle(D.kryptohybrid).map(function (v) {
+            return ['<b>' + U.esc(v.name) + '</b>', v.einsatz];
+          }));
+
+      case 'kryptohash':
+        return tabelle(['Verfahren', 'Hashlänge', 'Einsatz', 'Heute sicher?'],
+          waehle(D.kryptohash).map(function (v) {
+            return ['<b>' + U.esc(v.name) + '</b>', U.esc(v.laenge), v.einsatz,
+                    sicherTag(v.sicher)];
           }));
 
       case 'pruefregeln':

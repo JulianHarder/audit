@@ -2,6 +2,8 @@
    AUDIT – data/kontakte.js
    Die Gesprächspartner bei der Rampe 7 Logistik GmbH.
    Jeder Kontakt deckt einen Themenbereich der Prüfung ab.
+   Welcher Kontakt zu welchem Themengebiet gehoert, steht in
+   data/themen.js – hier stehen nur die Personen.
    =========================================================== */
 window.AUDIT = window.AUDIT || {};
 AUDIT.data = AUDIT.data || {};
@@ -46,6 +48,49 @@ AUDIT.data.kontakte = [
     bild: '🚨',
     themen: 'Ransomware-Ernstfall, Datenpanne, 72-Stunden-Frist',
     vorstellung: 'Wird nur im Ernstfall benutzt. Hoffentlich bleibt er leer.'
+  },
+
+  /* ---------- Themengebiet "Verschlüsselung und Kryptographie" ---------- */
+
+  {
+    key: 'nadja',
+    name: 'Nadja Reinhardt',
+    rolle: 'Systemadministration',
+    bild: '🔧',
+    themen: 'Symmetrisch, asymmetrisch, hybrid, Schlüsselaustausch',
+    vorstellung: 'Nadja baut die Verschlüsselung bei uns um. Sie denkt in Systemen und erklärt gern am konkreten Fall.'
+  },
+  {
+    key: 'berater',
+    name: 'Herr Baumgart',
+    rolle: 'IT-Sicherheitsberater',
+    bild: '🧮',
+    themen: 'Hashverfahren, digitale Signatur, Zertifikate',
+    vorstellung: 'Externer Berater, begleitet die Umstellung. Formuliert genau und legt Wert darauf, dass die Begriffe sitzen.'
+  },
+  {
+    key: 'projekt',
+    name: 'Frau Teichmann',
+    rolle: 'Projektleitung',
+    bild: '📋',
+    themen: 'Welches Verfahren wofür, Transport- und Ende-zu-Ende, Aufwand',
+    vorstellung: 'Leitet das Umstellungsprojekt. Sie will keine Theorie, sondern eine Entscheidung mit Begründung.'
+  },
+  {
+    key: 'jonas',
+    name: 'Jonas',
+    rolle: 'Azubi, 1. Lehrjahr',
+    bild: '🧢',
+    themen: 'Klartext und Geheimtext, Caesar, Grundbegriffe',
+    vorstellung: 'Neu im Betrieb und ehrlich ratlos. Bei ihm erklärst du – wer erklären kann, hat es verstanden.'
+  },
+  {
+    key: 'kryptoalarm',
+    name: '#krypto-alarm',
+    rolle: 'Gruppenchat',
+    bild: '🔓',
+    themen: 'Falsche Prüfsumme, ungültiges Zertifikat, geleakte Passwörter',
+    vorstellung: 'Der Kanal für die Fälle, bei denen die Kryptographie nicht hält, was sie verspricht.'
   }
 ];
 
@@ -64,7 +109,13 @@ AUDIT.data.sprecher = [
   { key: 'tim',        name: 'Tim (Azubi)',             farbe: '#a78bfa' },
   { key: 'luettmann',  name: 'Frau Lüttmann (Personal)', farbe: '#f472b6' },
   { key: 'brinkmann',  name: 'Herr Brinkmann (Versand)', farbe: '#fb923c' },
-  { key: 'extern',     name: 'IT-Dienstleister Nord',   farbe: '#94a3b8' }
+  { key: 'extern',     name: 'IT-Dienstleister Nord',   farbe: '#94a3b8' },
+
+  /* Themengebiet Verschlüsselung */
+  { key: 'nadja',      name: 'Nadja (Systeme)',         farbe: '#22d3ee' },
+  { key: 'baumgart',   name: 'Herr Baumgart (Berater)', farbe: '#c084fc' },
+  { key: 'teichmann',  name: 'Frau Teichmann (Projekt)', farbe: '#fbbf24' },
+  { key: 'jonas',      name: 'Jonas (Azubi)',           farbe: '#4ade80' }
 ];
 AUDIT.data.sprecherMap = {};
 AUDIT.data.sprecher.forEach(function (s) { AUDIT.data.sprecherMap[s.key] = s; });
