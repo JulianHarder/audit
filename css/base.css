@@ -336,9 +336,14 @@ table.t th { background: var(--bg-4); color: var(--text-dim); font-weight: 600; 
 .bar { height: 6px; background: var(--bg-4); border-radius: 4px; overflow: hidden; }
 .bar__fill { height: 100%; border-radius: 4px; background: var(--accent); transition: width .4s ease; }
 
-/* ===================== Lexikon-Panel ===================== */
+/* ===================== Panels =====================
 
-.lexikon {
+   Gemeinsame Huelle fuer Lexikon und Spickzettel: beide schieben
+   sich von rechts herein, am Schreibtisch als Streifen, auf dem
+   Handy ueber die ganze Breite.
+   ================================================== */
+
+.panel {
   position: fixed;
   top: 0;
   right: 0;
@@ -354,7 +359,7 @@ table.t th { background: var(--bg-4); color: var(--text-dim); font-weight: 600; 
   transform: translateX(104%);
   transition: transform .25s ease;
 }
-.lexikon.is-open { transform: translateX(0); }
+.panel.is-open { transform: translateX(0); }
 
 /* Solange das Lexikon als Vollbild ueber dem Chat liegt, wird die
    Seite dahinter festgehalten. Sonst scrollt das Handy am Ende der
@@ -367,16 +372,16 @@ body.hat-panel {
   width: 100%;
   overflow: hidden;
 }
-.lexikon__head {
+.panel__head {
   padding: 12px 14px;
   border-bottom: 1px solid var(--line);
   display: flex;
   align-items: center;
   gap: 10px;
 }
-.lexikon__head h2 { margin: 0; font-size: 16px; flex: 1; }
-.lexikon__search { padding: 10px 14px; border-bottom: 1px solid var(--line-soft); }
-.lexikon__search input {
+.panel__head h2 { margin: 0; font-size: 16px; flex: 1; }
+.panel__search { padding: 10px 14px; border-bottom: 1px solid var(--line-soft); }
+.panel__search input {
   width: 100%;
   background: var(--bg-4);
   border: 1px solid var(--line);
@@ -385,8 +390,8 @@ body.hat-panel {
   font: inherit;
   padding: 8px 10px;
 }
-.lexikon__search input:focus { outline: none; border-color: var(--accent-2); }
-.lexikon__body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 10px 14px 60px; }
+.panel__search input:focus { outline: none; border-color: var(--accent-2); }
+.panel__body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 10px 14px 60px; }
 
 .lxgroup { margin-bottom: 16px; }
 .lxgroup__h {
@@ -493,9 +498,39 @@ body.hat-panel {
 
 @media print {
   body { background: #fff; color: #000; padding: 0; }
-  body::before, body::after, .kopf, .fuss, .lexikon, .toasts, .btn, .chat__antworten { display: none !important; }
+  body::before, body::after, .kopf, .fuss, .panel, .toasts, .btn, .chat__antworten { display: none !important; }
   .seite { max-width: none; padding: 0; }
+
+  /* Ist der Spickzettel offen, wird er gedruckt und nicht die Seite
+     dahinter. Dafuer muss er aus der festen Position heraus in den
+     normalen Fluss – sonst druckt der Browser nur den sichtbaren
+     Ausschnitt. */
+  body.zettel-offen .seite { display: none !important; }
+  .panel--zettel.is-open {
+    display: block !important;
+    position: static;
+    width: auto;
+    max-width: none;
+    border: 0;
+    box-shadow: none;
+    transform: none;
+    background: #fff;
+  }
+  .panel--zettel.is-open .panel__head { display: none !important; }
+  .panel--zettel.is-open .panel__body { overflow: visible; padding: 0; }
   .card, .merk, .note { border: 1px solid #bbb; background: #fff; color: #000; break-inside: avoid; }
+
+  /* Merksaetze auf Papier: heller Grund, dunkle Schrift, und ein Satz
+     wird nicht ueber zwei Seiten zerrissen. */
+  .zettel__satz {
+    border: 1px solid #bbb;
+    border-left: 3px solid #555;
+    background: #fff;
+    color: #000;
+    break-inside: avoid;
+  }
+  .zettel__gebiet, .zettel__thema { color: #000; }
+  .zettel__quelle { color: #444; }
   .tag { border: 1px solid #999; color: #000; background: #eee; }
   a, .lx { color: #000; text-decoration: none; }
 }

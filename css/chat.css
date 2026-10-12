@@ -300,6 +300,13 @@
 
 /* ===================== Spickzettel ===================== */
 
+/* Name des Themengebiets ueber den Merksaetzen im Panel */
+.zettel__gebiet {
+  font-size: 13px;
+  color: var(--text-dim);
+  margin-bottom: 10px;
+}
+
 .zettel__thema {
   font-size: 11px;
   letter-spacing: .12em;
@@ -328,7 +335,7 @@
   .antwort { font-size: 15px; padding: 13px 13px; }
   .kontakt__bild { flex-basis: 42px; width: 42px; height: 42px; font-size: 21px; }
   .kontakt--thema .kontakt__bild { flex-basis: 48px; width: 48px; height: 48px; font-size: 24px; }
-  .lexikon { width: 100%; }
+  .panel { width: 100%; }
 }
 
 /* Breite Übersichtstabellen auf dem Handy seitlich schiebbar */

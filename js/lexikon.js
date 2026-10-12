@@ -30,56 +30,23 @@ AUDIT.lexikon = (function () {
     return AUDIT.data.lexikon.filter(imGebiet);
   }
 
-  /* ---------- Seitenlauf festhalten ----------
-     Auf dem Handy liegt das Lexikon als Vollbild ueber dem Chat. Ohne
-     Sperre scrollt das Telefon am Ende der Lexikonliste die Seite
-     dahinter weiter – nach dem Schliessen stand man wieder am Anfang
-     des Gespraechs. Deshalb wird die Position gemerkt, der Body
-     festgesetzt und beim Schliessen genau dorthin zurueckgesprungen.
-     Am Schreibtisch ist das Lexikon nur ein Seitenpanel, dort darf die
-     Seite weiter scrollen. */
-
-  var gemerkterStand = 0;
-  var gesperrt = false;
-
-  function schmalerSchirm() {
-    try { return window.matchMedia('(max-width: 560px)').matches; }
-    catch (e) { return false; }
-  }
-
-  function sperren() {
-    if (gesperrt || !schmalerSchirm()) return;
-    gemerkterStand = window.pageYOffset || document.documentElement.scrollTop || 0;
-    document.body.style.top = (-gemerkterStand) + 'px';
-    document.body.classList.add('hat-panel');
-    gesperrt = true;
-  }
-
-  function entsperren() {
-    if (!gesperrt) return;
-    document.body.classList.remove('hat-panel');
-    document.body.style.top = '';
-    gesperrt = false;
-    window.scrollTo(0, gemerkterStand);
-  }
-
   function baue() {
     if (panel) return;
-    panel = U.el('aside', { class: 'lexikon', id: 'lexikon' });
+    panel = U.el('aside', { class: 'panel panel--lexikon', id: 'lexikon' });
 
-    var head = U.el('div', { class: 'lexikon__head' }, [
+    var head = U.el('div', { class: 'panel__head' }, [
       U.el('h2', { text: '📖 Lexikon' }),
       U.el('button', { class: 'btn btn--sm', text: '✕', title: 'Schließen', onclick: zu })
     ]);
     panel.appendChild(head);
 
-    var sb = U.el('div', { class: 'lexikon__search' });
+    var sb = U.el('div', { class: 'panel__search' });
     suchfeld = U.el('input', { type: 'text', placeholder: 'Begriff suchen …' });
     suchfeld.addEventListener('input', function () { liste(suchfeld.value); });
     sb.appendChild(suchfeld);
     panel.appendChild(sb);
 
-    body = U.el('div', { class: 'lexikon__body' });
+    body = U.el('div', { class: 'panel__body' });
     panel.appendChild(body);
     document.body.appendChild(panel);
 
@@ -143,7 +110,9 @@ AUDIT.lexikon = (function () {
 
   function auf() {
     baue();
-    sperren();
+    /* Nur ein Panel zur Zeit */
+    if (AUDIT.spickzettel && AUDIT.spickzettel.zu) AUDIT.spickzettel.zu();
+    U.seiteSperren('lexikon');
     panel.classList.add('is-open');
     offen = true;
     var b = document.getElementById('btnLexikon');
@@ -152,7 +121,7 @@ AUDIT.lexikon = (function () {
   function zu() {
     if (!panel) return;
     panel.classList.remove('is-open');
-    entsperren();
+    U.seiteFreigeben('lexikon');
     offen = false;
     var b = document.getElementById('btnLexikon');
     if (b) b.classList.remove('is-active');

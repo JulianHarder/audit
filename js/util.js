@@ -90,6 +90,42 @@ AUDIT.util = (function () {
 
   function clamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
 
+  /* ---------- Seitenlauf festhalten ----------
+     Auf dem Handy liegen Lexikon und Spickzettel als Vollbild ueber der
+     Seite. Ohne Sperre scrollt das Telefon am Ende der Panel-Liste die
+     Seite dahinter weiter – nach dem Schliessen stand man wieder woanders
+     im Gespraech. Also Position merken, Body festsetzen, beim Schliessen
+     genau dorthin zurueck.
+
+     Am Schreibtisch sind die Panels nur Seitenstreifen, dort darf die
+     Seite weiter scrollen. Beide Panels teilen sich diese Sperre, damit
+     das zweite sie nicht vorzeitig aufhebt. */
+
+  var sperrStand = 0;
+  var sperrHalter = null;
+
+  function schmalerSchirm() {
+    try { return window.matchMedia('(max-width: 560px)').matches; }
+    catch (e) { return false; }
+  }
+
+  function seiteSperren(halter) {
+    if (sperrHalter || !schmalerSchirm()) return;
+    sperrHalter = halter || 'panel';
+    sperrStand = window.pageYOffset || document.documentElement.scrollTop || 0;
+    document.body.style.top = (-sperrStand) + 'px';
+    document.body.classList.add('hat-panel');
+  }
+
+  function seiteFreigeben(halter) {
+    if (!sperrHalter) return;
+    if (halter && halter !== sperrHalter) return;   /* fremdes Panel: nichts tun */
+    sperrHalter = null;
+    document.body.classList.remove('hat-panel');
+    document.body.style.top = '';
+    window.scrollTo(0, sperrStand);
+  }
+
   /* ---------- Toasts ---------- */
 
   var toastHost = null;
@@ -164,6 +200,7 @@ AUDIT.util = (function () {
     el: el, svg: svg, $: $, $$: $$, clear: clear,
     esc: esc, lexify: lexify, rich: rich, id: id, clamp: clamp,
     toast: toast, modal: modal,
+    seiteSperren: seiteSperren, seiteFreigeben: seiteFreigeben,
     stufeName: stufeName, stufeWert: stufeWert, wertStufe: wertStufe
   };
 })();

@@ -303,23 +303,6 @@ AUDIT.app = (function () {
     });
   }
 
-  /* ---------- Ansicht: Spickzettel ---------- */
-
-  function zeigeZettel(param) {
-    ansicht = 'zettel';
-    /* Das Gebiet steht in der Adresse (#/zettel/sicherheit). Fehlt es –
-       etwa bei einem alten Lesezeichen –, wird das zuletzt geoeffnete
-       genommen, sonst das erste. */
-    var key = (param && AUDIT.data.themenMap[param]) ? param
-            : (gebiet || ((AUDIT.data.themen[0] || {}).key || null));
-    setzeGebiet(key);
-    var t = key ? AUDIT.data.themenMap[key] : null;
-    setzeKopf('📌 Spickzettel', t ? t.name : 'deine gesammelten Merksätze',
-      function () { if (key) zeige('thema', key); else zeige('themen'); });
-    U.clear(seite);
-    AUDIT.spickzettel.zeichne(seite, key);
-  }
-
   /* ---------- Adresszeile und Zurück-Taste ----------
      Die Ansicht steht in der Adresszeile (#/t/sicherheit, #/k/sabrina,
      #/c/sab-01).
@@ -332,7 +315,6 @@ AUDIT.app = (function () {
     if (was === 'thema') return '#/t/' + param;
     if (was === 'kontakt') return '#/k/' + param;
     if (was === 'chat') return '#/c/' + param;
-    if (was === 'zettel') return param ? '#/zettel/' + param : '#/zettel';
     return '#/';
   }
 
@@ -344,7 +326,14 @@ AUDIT.app = (function () {
     if (teile[0] === 't' && teile[1]) return { was: 'thema', param: teile[1] };
     if (teile[0] === 'k' && teile[1]) return { was: 'kontakt', param: teile[1] };
     if (teile[0] === 'c' && teile[1]) return { was: 'chat', param: teile[1] };
-    if (teile[0] === 'zettel') return { was: 'zettel', param: teile[1] || null };
+    /* Alte Lesezeichen auf den Spickzettel: Der ist heute ein Panel und
+       keine eigene Ansicht mehr. Wir landen im Themengebiet und schlagen
+       ihn dort auf. Ohne Angabe im ersten Gebiet. */
+    if (teile[0] === 'zettel') {
+      var k = (teile[1] && AUDIT.data.themenMap[teile[1]]) ? teile[1]
+            : ((AUDIT.data.themen[0] || {}).key || null);
+      return { was: 'thema', param: k, zettel: true };
+    }
     return null;
   }
 
@@ -355,11 +344,11 @@ AUDIT.app = (function () {
      die gemerkte Position wiederherstellt. */
   function zeichne(was, param) {
     if (AUDIT.lexikon && AUDIT.lexikon.zu) AUDIT.lexikon.zu();
+    if (AUDIT.spickzettel && AUDIT.spickzettel.zu) AUDIT.spickzettel.zu();
     window.scrollTo(0, 0);
     if (was === 'thema') zeigeThema(param);
     else if (was === 'kontakt') zeigeKontakt(param);
     else if (was === 'chat') zeigeChat(param);
-    else if (was === 'zettel') zeigeZettel(param);
     else zeigeThemen();
   }
 
@@ -377,11 +366,19 @@ AUDIT.app = (function () {
     zeichne(was, param);
   }
 
+  /* Eine gelesene Route anzeigen. Trug sie das alte #/zettel, wird nach
+     dem Zeichnen der Spickzettel aufgeschlagen. */
+  function routeAnwenden(r) {
+    zeige(r.was, r.param);
+    if (r.zettel && AUDIT.spickzettel) AUDIT.spickzettel.auf(r.param);
+  }
+
   /* Zurück-Taste des Browsers und von Hand geänderte Adresse */
   function aufHashwechsel() {
     if (selbstGesetzt) { selbstGesetzt = false; return; }
     var r = routeLesen();
     if (!r) { zeige('themen'); return; }
+    if (r.zettel) { routeAnwenden(r); return; }
     zeichne(r.was, r.param);
   }
 
@@ -396,8 +393,7 @@ AUDIT.app = (function () {
       AUDIT.lexikon.umschalten();
     });
     document.getElementById('btnZettel').addEventListener('click', function () {
-      if (ansicht === 'zettel') { if (gebiet) zeige('thema', gebiet); else zeige('themen'); }
-      else zeige('zettel', gebiet);
+      AUDIT.spickzettel.umschalten(gebiet);
     });
 
     /* Tastatur: 1–4 wählt eine Antwort */
@@ -425,6 +421,8 @@ AUDIT.app = (function () {
       zeige('themen');
     } else if (start.was === 'thema' && !AUDIT.data.themenMap[start.param]) {
       zeige('themen');
+    } else if (start.zettel) {
+      routeAnwenden(start);
     } else {
       zeichne(start.was, start.param);
     }

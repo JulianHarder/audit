@@ -75,6 +75,9 @@ dieselbe Abfrage.
 * Fachbegriffe sind <u>markiert</u> und öffnen das **Lexikon** (📖 oben rechts, mit Suche)
 * Jedes Gespräch endet mit einem Merksatz → landet automatisch im **Spickzettel**
   (📌 oben rechts, nach Themen sortiert, druckbar)
+* Lexikon und Spickzettel sind Panels, die sich über die Seite schieben –
+  man verlässt das Gespräch nicht und redet danach weiter, wo man war.
+  Beide schließen mit Esc, und es ist immer nur eines offen
 * Lexikon und Spickzettel zeigen immer nur das **geöffnete Themengebiet**. Auf
   der Übersicht darüber sind beide Knöpfe ausgeblendet, weil dort kein Gebiet
   gewählt ist

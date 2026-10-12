@@ -3,6 +3,11 @@
    Sammelt die Merksätze aus den Gesprächen. Am Ende hat man
    seinen eigenen Lernzettel – auch zum Ausdrucken.
 
+   Liegt als Panel über der Seite, genau wie das Lexikon. Das ist
+   Absicht: Wer ihn mitten im Gespräch aufschlägt, soll danach
+   weiterreden können, wo er aufgehört hat. Als eigene Seite hätte
+   das Zurückkommen das Gespräch von vorn begonnen.
+
    Jeder Merksatz merkt sich, aus welchem Themengebiet er stammt
    (Feld "gebiet"), und der Zettel zeigt immer nur eines davon.
    Das Feld "thema" daneben ist feiner: das Unterthema des
@@ -14,6 +19,10 @@ AUDIT.spickzettel = (function () {
   'use strict';
   var U = AUDIT.util;
   var SCHLUESSEL = 'spickzettel';
+
+  var panel = null, body = null;
+  var offen = false;
+  var gebiet = null;      /* welches Themengebiet gerade gezeigt wird */
 
   /* Merksätze, die vor der Einführung der Themengebiete gespeichert
      wurden, haben kein "gebiet". Sie stammen zwangsläufig aus dem
@@ -55,18 +64,11 @@ AUDIT.spickzettel = (function () {
     var liste = alle(gebiet);
     var g = gebiet ? (AUDIT.data.themenMap || {})[gebiet] : null;
 
-    mount.appendChild(U.el('h1', { text: '📌 Dein Spickzettel' }));
-    if (g) mount.appendChild(U.el('p', { class: 'sub', text: g.name }));
+    if (g) mount.appendChild(U.el('div', { class: 'zettel__gebiet', text: g.name }));
 
     if (!liste.length) {
       mount.appendChild(U.el('p', { class: 'lead',
         text: 'Noch leer. Jedes Gespräch endet mit einem Merksatz – der landet automatisch hier.' }));
-      mount.appendChild(U.el('button', {
-        class: 'btn btn--primary', text: 'Zu den Gesprächen',
-        onclick: function () {
-          if (gebiet) AUDIT.app.zeige('thema', gebiet); else AUDIT.app.zeige('themen');
-        }
-      }));
       return;
     }
 
@@ -116,5 +118,51 @@ AUDIT.spickzettel = (function () {
     });
   }
 
-  return { alle: alle, hinzu: hinzu, leeren: leeren, zeichne: zeichne };
+  /* ---------- Panel ---------- */
+
+  function baue() {
+    if (panel) return;
+    panel = U.el('aside', { class: 'panel panel--zettel', id: 'spickzettel' });
+    panel.appendChild(U.el('div', { class: 'panel__head' }, [
+      U.el('h2', { text: '📌 Spickzettel' }),
+      U.el('button', { class: 'btn btn--sm', text: '✕', title: 'Schließen', onclick: zu })
+    ]));
+    body = U.el('div', { class: 'panel__body' });
+    panel.appendChild(body);
+    document.body.appendChild(panel);
+  }
+
+  function auf(key) {
+    baue();
+    /* Nur ein Panel zur Zeit */
+    if (AUDIT.lexikon && AUDIT.lexikon.zu) AUDIT.lexikon.zu();
+    gebiet = key || null;
+    zeichne(body, gebiet);
+    U.seiteSperren('zettel');
+    panel.classList.add('is-open');
+    /* Die Druckansicht blendet damit die Seite dahinter aus. */
+    document.body.classList.add('zettel-offen');
+    offen = true;
+    var b = document.getElementById('btnZettel');
+    if (b) b.classList.add('is-active');
+  }
+
+  function zu() {
+    if (!panel) return;
+    panel.classList.remove('is-open');
+    document.body.classList.remove('zettel-offen');
+    U.seiteFreigeben('zettel');
+    offen = false;
+    var b = document.getElementById('btnZettel');
+    if (b) b.classList.remove('is-active');
+  }
+
+  function umschalten(key) { offen ? zu() : auf(key); }
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && offen) zu();
+  });
+
+  return { alle: alle, hinzu: hinzu, leeren: leeren, zeichne: zeichne,
+           auf: auf, zu: zu, umschalten: umschalten };
 })();
