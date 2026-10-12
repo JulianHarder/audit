@@ -1,12 +1,17 @@
-# AUDIT – IT-Sicherheit und Datenschutz im Firmen-Chat
+# AUDIT – Prüfungsstoff im Firmen-Chat
 
-Lernseite für **Datenschutz, Informationssicherheit und Compliance**
-(Fachinformatiker, Modul IV, IHK-Prüfung).
+Lernseite, die Prüfungsstoff als Gespräch unter Kollegen abfragt.
 
 Du bist neu bei der fiktiven **Rampe 7 Logistik GmbH**. Deine Kolleginnen und
 Kollegen schreiben dir: eine verdächtige Mail, eine Kundenanfrage, ein Vorfall.
 Du entscheidest per Auswahl und bekommst sofort die Begründung – in der Sprache,
 die in der Klausur erwartet wird.
+
+Das Format ist unabhängig vom Thema: Gespräche, Lexikon und Merksätze liegen in
+eigenen Dateien unter `data/`, getrennt vom Programm. Weitere Themengebiete
+kommen als zusätzliche Dateien dazu. Den Anfang macht **Datenschutz,
+Informationssicherheit und Compliance** (Fachinformatiker, Modul IV,
+IHK-Prüfung) – darauf beziehen sich die folgenden Abschnitte.
 
 Eine Sache pro Bildschirm. Kein Drag & Drop, kein Zoom, keine Einarbeitung.
 Funktioniert am Rechner und auf dem Handy.
@@ -71,7 +76,7 @@ dieselbe Abfrage.
 
 ---
 
-## Inhaltliche Grundlage
+## Inhaltliche Grundlage (Themengebiet Datenschutz und Informationssicherheit)
 
 Die Gespräche decken die **25 Aufgaben der Probeklausur Modul IV** ab:
 
@@ -160,6 +165,15 @@ AUDIT.data.dialoge.push({
 });
 ```
 
+### Ein neues Themengebiet anlegen
+
+Dasselbe Muster, nur in neuen Dateien: Gesprächspartner in `data/kontakte.js`
+ergänzen, eine `data/dialoge-<name>.js` mit den Gesprächen anlegen, Begriffe in
+`data/lexikon.js` nachtragen und beides in `index.html` einbinden. Am Programm
+selbst ist dafür nichts zu ändern – außer man möchte eine **neue Art von
+Übersichtstabelle**, dann kommt ein weiterer Fall in `karteInhalt()` in
+`js/chat.js` dazu.
+
 **Schritt-Typen:** `nachricht` · `frage` (genau eine richtige) · `mehrfach`
 (alle richtigen ankreuzen) · `karte` (Tabelle aus einer `data/`-Datei über
 `quelle` und `keys`, oder freies `html`) · `merk`.
@@ -184,8 +198,9 @@ keine ES-Module, kein `fetch`** – deshalb läuft die Seite auch per Doppelklic
 
 ## Hinweise
 
-AUDIT ist eine Lernhilfe für die Prüfung, keine Rechtsberatung. Artikelangaben
-beziehen sich auf die DSGVO, Paragrafen auf deutsches Recht.
+AUDIT ist eine Lernhilfe für die Prüfung, keine Rechtsberatung. Im Themengebiet
+Datenschutz beziehen sich Artikelangaben auf die DSGVO, Paragrafen auf deutsches
+Recht.
 
 Inhalte und Code sind mit Unterstützung von KI (Claude) entstanden und von mir
 geprüft und überarbeitet.
