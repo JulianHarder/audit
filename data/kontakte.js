@@ -1,6 +1,6 @@
 /* ===========================================================
    AUDIT – data/kontakte.js
-   Die Gesprächspartner bei der Lippe Logistik GmbH.
+   Die Gesprächspartner bei der Rampe 7 Logistik GmbH.
    Jeder Kontakt deckt einen Themenbereich der Prüfung ab.
    =========================================================== */
 window.AUDIT = window.AUDIT || {};

@@ -39,7 +39,7 @@ AUDIT.app = (function () {
 
   function zeigeListe() {
     ansicht = 'liste';
-    setzeKopf('<b>AUDIT</b>', 'IT-Sicherheit & Datenschutz lernen', null);
+    setzeKopf('<b>AUDIT</b>', 'Interaktive Lernplattform', null);
     U.clear(seite);
 
     var gesamt = AUDIT.data.dialoge.length;
@@ -47,7 +47,7 @@ AUDIT.app = (function () {
 
     seite.appendChild(U.el('h1', { text: 'Deine Kollegen schreiben dir' }));
     seite.appendChild(U.el('p', { class: 'lead',
-      text: 'Du bist neu bei der Lippe Logistik GmbH. Wähle jemanden aus – ihr unterhaltet euch, ' +
+      text: 'Du bist neu bei der Rampe 7 Logistik GmbH. Wähle jemanden aus – ihr unterhaltet euch, ' +
             'du entscheidest, und du bekommst sofort die Begründung dazu.' }));
 
     AUDIT.data.kontakte.forEach(function (k) {
@@ -81,7 +81,48 @@ AUDIT.app = (function () {
     });
 
     seite.appendChild(U.el('p', { class: 'sub', style: { marginTop: '16px' },
-      text: fertig + ' von ' + gesamt + ' Gesprächen geführt.' }));
+      text: fertig + ' von ' + gesamt + ' Gesprächen geführt.' +
+            (AUDIT.storage.verfuegbar ? '' : ' (Dieser Browser speichert nichts – ' +
+             'der Fortschritt gilt nur, solange die Seite offen bleibt.)') }));
+
+    /* Fortschritt verwerfen. Mit Rueckfrage, weil es nicht
+       rueckholbar ist. */
+    var fortschrittDa = fertig > 0 || AUDIT.spickzettel.alle().length > 0;
+    seite.appendChild(U.el('button', {
+      class: 'btn btn--danger btn--sm',
+      text: '↺ Fortschritt zurücksetzen',
+      disabled: fortschrittDa ? null : 'disabled',
+      title: fortschrittDa ? 'Gespräche und Spickzettel löschen' : 'Es ist noch nichts gespeichert',
+      onclick: function () { if (fortschrittDa) fortschrittLoeschenFragen(); }
+    }));
+  }
+
+  /* ---------- Fortschritt zurücksetzen ---------- */
+
+  function fortschrittLoeschenFragen() {
+    var fertig = AUDIT.data.dialoge.filter(function (d) { return istErledigt(d.id); }).length;
+    var saetze = AUDIT.spickzettel.alle().length;
+
+    U.modal('Fortschritt wirklich löschen?',
+      '<p>Gelöscht werden:</p>' +
+      '<ul>' +
+      '<li><b>' + fertig + '</b> als geführt markierte ' + (fertig === 1 ? 'Gespräch' : 'Gespräche') + '</li>' +
+      '<li><b>' + saetze + '</b> gesammelte ' + (saetze === 1 ? 'Merksatz' : 'Merksätze') + ' im Spickzettel</li>' +
+      '</ul>' +
+      '<p class="sub">Das lässt sich nicht rückgängig machen. Die Gespräche selbst ' +
+      'bleiben natürlich erhalten – du fängst nur wieder bei null an.</p>',
+      [
+        { label: 'Abbrechen' },
+        {
+          label: 'Ja, alles löschen', danger: true,
+          onClick: function (close) {
+            AUDIT.storage.alleLoeschen();
+            close();
+            zeige('liste');
+            U.toast('Fortschritt zurückgesetzt. Viel Erfolg beim zweiten Durchgang.', 'ok');
+          }
+        }
+      ]);
   }
 
   /* ---------- Ansicht: Gespräche eines Kontakts ---------- */

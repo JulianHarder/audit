@@ -3,7 +3,7 @@
 Lernseite für **Datenschutz, Informationssicherheit und Compliance**
 (Fachinformatiker, Modul IV, IHK-Prüfung).
 
-Du bist neu bei der fiktiven **Lippe Logistik GmbH**. Deine Kolleginnen und
+Du bist neu bei der fiktiven **Rampe 7 Logistik GmbH**. Deine Kolleginnen und
 Kollegen schreiben dir: eine verdächtige Mail, eine Kundenanfrage, ein Vorfall.
 Du entscheidest per Auswahl und bekommst sofort die Begründung – in der Sprache,
 die in der Klausur erwartet wird.

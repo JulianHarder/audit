@@ -190,11 +190,12 @@
 
 /* ===================== Antwortbereich ===================== */
 
+/* Der Antwortbereich laeuft im Verlauf mit. Frueher klebte er am
+   unteren Rand (position: sticky) – auf kleinen Schirmen verdeckte
+   die Frage dann einen guten Teil des Gespraechs und stand ausserhalb
+   des Verlaufs. Jetzt ist sie der letzte Beitrag im Chat. */
 .chat__antworten {
-  position: sticky;
-  bottom: 0;
-  background: linear-gradient(180deg, rgba(11,15,20,0), var(--bg) 24%);
-  padding: 14px 0 16px;
+  padding: 8px 0 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -310,7 +311,7 @@
 
 @media (max-width: 560px) {
   body { font-size: 15px; }
-  .seite { padding: 12px 12px 80px; }
+  .seite { padding: 12px 12px calc(var(--fuss-h) + 28px); }
   .blase { max-width: 92%; font-size: 15px; }
   .antwort { font-size: 15px; padding: 13px 13px; }
   .kontakt__bild { flex-basis: 42px; width: 42px; height: 42px; font-size: 21px; }

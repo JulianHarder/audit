@@ -38,6 +38,7 @@
   --info:          #38bdf8;
 
   --kopf-h:        54px;
+  --fuss-h:        46px;
   --spalte:        760px;
   --r:             12px;
   --r-s:           8px;
@@ -64,7 +65,27 @@ body {
   padding-top: var(--kopf-h);
 }
 
+/* Hintergrund in zwei Lagen, beide fest im Bildschirm verankert und
+   fuer Klicks durchlaessig:
+   ::before  das gekritzelte Hintergrundbild, gedaempft, damit die
+             Schrift darueber lesbar bleibt. Es wird gekachelt statt
+             zugeschnitten – so sind die Kritzeleien auf dem Handy
+             genauso gross wie am Schreibtisch und nichts faellt weg.
+   ::after   die beiden Farbschleier, die der Seite ihre Tiefe geben
+   Beide liegen auf z-index 0, der Inhalt (.seite) auf 1. */
+
 body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background: url("../bilder/hintergrund.webp") 0 0 repeat;
+  background-size: 836px auto;   /* halbe Bildbreite: feineres Muster */
+  opacity: .45;
+}
+
+body::after {
   content: "";
   position: fixed;
   inset: 0;
@@ -137,7 +158,7 @@ body::before {
   z-index: 1;
   max-width: var(--spalte);
   margin: 0 auto;
-  padding: 16px 14px 90px;
+  padding: 16px 14px calc(var(--fuss-h) + 36px);
 }
 .seite h1 { font-size: 23px; margin: 4px 0 6px; }
 .seite h2 { font-size: 17px; margin: 24px 0 8px; }
@@ -331,6 +352,18 @@ table.t th { background: var(--bg-4); color: var(--text-dim); font-weight: 600; 
   transition: transform .25s ease;
 }
 .lexikon.is-open { transform: translateX(0); }
+
+/* Solange das Lexikon als Vollbild ueber dem Chat liegt, wird die
+   Seite dahinter festgehalten. Sonst scrollt das Handy am Ende der
+   Lexikonliste die Seite weiter und man verliert die Stelle im
+   Gespraech. js/lexikon.js merkt sich dazu die Scrollposition. */
+body.hat-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  width: 100%;
+  overflow: hidden;
+}
 .lexikon__head {
   padding: 12px 14px;
   border-bottom: 1px solid var(--line);
@@ -350,7 +383,7 @@ table.t th { background: var(--bg-4); color: var(--text-dim); font-weight: 600; 
   padding: 8px 10px;
 }
 .lexikon__search input:focus { outline: none; border-color: var(--accent-2); }
-.lexikon__body { flex: 1; overflow-y: auto; padding: 10px 14px 60px; }
+.lexikon__body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 10px 14px 60px; }
 
 .lxgroup { margin-bottom: 16px; }
 .lxgroup__h {
@@ -392,7 +425,7 @@ table.t th { background: var(--bg-4); color: var(--text-dim); font-weight: 600; 
 
 .toasts {
   position: fixed;
-  bottom: 16px;
+  bottom: calc(var(--fuss-h) + 14px);
   left: 50%;
   transform: translateX(-50%);
   z-index: 90;
@@ -457,7 +490,7 @@ table.t th { background: var(--bg-4); color: var(--text-dim); font-weight: 600; 
 
 @media print {
   body { background: #fff; color: #000; padding: 0; }
-  body::before, .kopf, .lexikon, .toasts, .btn, .chat__antworten { display: none !important; }
+  body::before, body::after, .kopf, .fuss, .lexikon, .toasts, .btn, .chat__antworten { display: none !important; }
   .seite { max-width: none; padding: 0; }
   .card, .merk, .note { border: 1px solid #bbb; background: #fff; color: #000; break-inside: avoid; }
   .tag { border: 1px solid #999; color: #000; background: #eee; }
@@ -466,14 +499,24 @@ table.t th { background: var(--bg-4); color: var(--text-dim); font-weight: 600; 
 
 /* ===================== Fußzeile =====================
 
-   Nennt den Urheber und die verwendete Technik. Sitzt unter der
-   Seitenspalte und nimmt deren Breite auf, damit sie nicht aus dem
-   Raster fällt.
+   Nennt den Urheber und die verwendete Technik. Sie steht fest am
+   unteren Rand, damit sie immer sichtbar ist; .fuss__innen nimmt die
+   Breite der Seitenspalte auf, damit sie nicht aus dem Raster fällt.
+   Der untere Freiraum von .seite haelt den Inhalt darueber frei.
    ==================================================== */
 
 .fuss {
-  position: relative;
-  z-index: 1;
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 30;
+  background: rgba(13, 19, 27, .94);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--line);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-mute);
+}
+.fuss__innen {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -481,11 +524,9 @@ table.t th { background: var(--bg-4); color: var(--text-dim); font-weight: 600; 
   gap: 2px 16px;
   max-width: var(--spalte);
   margin: 0 auto;
-  padding: 0 14px 16px;
-  font-size: 12px;
-  line-height: 1.5;
-  color: var(--text-mute);
+  padding: 7px 14px;
 }
+.fuss p { margin: 0; }
 .fuss a {
   color: var(--text-dim);
   text-decoration: none;
