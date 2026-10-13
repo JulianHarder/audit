@@ -21,6 +21,27 @@ AUDIT.chat = (function () {
   /* Damit nicht immer derselbe Satz kommt */
   function zufall(liste) { return liste[Math.floor(Math.random() * liste.length)]; }
 
+  /* Mischt eine Kopie der Liste (Fisher-Yates). Die Antwortmoeglichkeiten
+     stehen in den data/-Dateien meist mit der richtigen zuerst – angezeigt
+     werden sie in zufaelliger Reihenfolge, damit nicht die Position
+     gelernt wird statt des Stoffs. Die Daten selbst bleiben unberuehrt.
+
+     Soll die Reihenfolge einer Frage erhalten bleiben, weil sie etwas
+     bedeutet (eine Zeitfolge, eine Rangfolge), bekommt der Schritt
+     mischen: false. */
+  function mischen(liste) {
+    var a = liste.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+  function reihenfolge(schritt) {
+    var liste = schritt.optionen || [];
+    return schritt.mischen === false ? liste.slice() : mischen(liste);
+  }
+
   function tippDauer(text) {
     return U.clamp(260 + String(text || '').length * 11, 380, 1200);
   }
@@ -377,13 +398,15 @@ AUDIT.chat = (function () {
     function frage(s) {
       U.clear(antworten);
       var versuche = 0;
+      /* Einmal beim Aufbau gemischt und dann stehengelassen – sonst
+         wuerden die Knoepfe nach einem Fehlversuch springen. */
+      var optionen = reihenfolge(s);
       var kopf = U.el('div', { class: 'chat__frage', text: s.text || 'Deine Antwort' });
       antworten.appendChild(kopf);
       var knoepfe = [];
 
       function loesungZeigen() {
-        var richtige = s.optionen.filter(function (o) { return o.richtig; })[0];
-        var idx = s.optionen.indexOf(richtige);
+        var richtige = optionen.filter(function (o) { return o.richtig; })[0];
         U.clear(antworten);
         blaseIch('Zeig mir die Lösung.');
         tippenZeigen(s.von);
@@ -408,7 +431,7 @@ AUDIT.chat = (function () {
         scrollEnde();
       }
 
-      s.optionen.forEach(function (o, nr) {
+      optionen.forEach(function (o, nr) {
         var knopf = U.el('button', { class: 'antwort' }, [
           U.el('span', { class: 'antwort__nr', text: String(nr + 1) }),
           U.el('span', { html: U.rich(o.text) })
@@ -461,8 +484,11 @@ AUDIT.chat = (function () {
       var gewaehlt = {};
       var versuche = 0;
       var knoepfe = [];
+      /* gewaehlt[] zaehlt in der ANGEZEIGTEN Reihenfolge – deshalb muss
+         die Auswertung weiter unten dieselbe Liste benutzen. */
+      var optionen = reihenfolge(s);
 
-      s.optionen.forEach(function (o, nr) {
+      optionen.forEach(function (o, nr) {
         var knopf = U.el('button', { class: 'antwort' }, [
           U.el('span', { class: 'antwort__nr', text: '☐' }),
           U.el('span', { html: U.rich(o.text) })
@@ -494,7 +520,7 @@ AUDIT.chat = (function () {
       function loesungZeigen() {
         U.clear(antworten);
         blaseIch('Zeig mir die Lösung.');
-        var richtigeTexte = s.optionen.filter(function (o) { return o.richtig; })
+        var richtigeTexte = optionen.filter(function (o) { return o.richtig; })
           .map(function (o) { return o.text.replace(/<[^>]+>/g, ''); });
         tippenZeigen(s.von);
         warte(700, function () {
@@ -512,11 +538,11 @@ AUDIT.chat = (function () {
       pruefen.addEventListener('click', function () {
         if (!aktiv() || pruefen.hasAttribute('disabled')) return;
         var fehlend = 0, zuviel = 0;
-        s.optionen.forEach(function (o, nr) {
+        optionen.forEach(function (o, nr) {
           if (o.richtig && !gewaehlt[nr]) fehlend++;
           if (!o.richtig && gewaehlt[nr]) zuviel++;
         });
-        var gewaehlteTexte = s.optionen.filter(function (o, nr) { return gewaehlt[nr]; })
+        var gewaehlteTexte = optionen.filter(function (o, nr) { return gewaehlt[nr]; })
           .map(function (o) { return o.text; });
         blaseIch(gewaehlteTexte.length ? gewaehlteTexte.join(' · ') : '(nichts ausgewählt)');
 

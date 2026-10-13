@@ -271,6 +271,26 @@ Für das Themengebiet Netzwerktechnik liefert `data/netzwerk.js` neun
 Übersichtstabellen: `osi`, `netzgeraete`, `netzprotokolle`, `ipklassen`,
 `subnetze`, `topologien`, `netzwerkzeuge`, `verkabelung` und `routing`.
 
+### Die Reihenfolge der Antworten
+
+Beim Schreiben steht die richtige Antwort meist zuerst – das ist bequem und darf
+so bleiben. **Angezeigt** werden die Möglichkeiten aber in zufälliger
+Reihenfolge, die bei jedem Aufruf neu gewürfelt wird. Sonst lernt man die
+Position statt des Stoffs, und beim zweiten Durchlauf erinnert man sich an „war
+die zweite" statt an die Begründung.
+
+Das erledigt die Engine (`reihenfolge()` in `js/chat.js`), für `frage` und
+`mehrfach` gleichermaßen und ohne Zutun der Datendateien – auch bei künftigen
+Themengebieten. Innerhalb eines Versuchs bleibt die Reihenfolge stehen, damit
+die Knöpfe nach einem Fehlgriff nicht springen.
+
+Soll eine Frage ihre Reihenfolge behalten, weil sie etwas bedeutet – eine
+Zeitfolge, eine Rangfolge, eine Steigerung –, bekommt der Schritt `mischen: false`:
+
+```js
+{ typ: 'frage', text: 'In welcher Reihenfolge?', mischen: false, optionen: [ … ] }
+```
+
 **Schritt-Typen:** `nachricht` · `frage` (genau eine richtige) · `mehrfach`
 (alle richtigen ankreuzen) · `karte` (Tabelle aus einer `data/`-Datei über
 `quelle` und `keys`, oder freies `html`) · `merk`.
