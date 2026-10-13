@@ -138,6 +138,73 @@ AUDIT.chat = (function () {
                     sicherTag(v.sicher)];
           }));
 
+      case 'osi':
+        return tabelle(['Schicht', 'Aufgabe', 'Beispiele', 'TCP/IP'],
+          waehle(D.osischichten).map(function (l) {
+            return ['<span class="tag tag--art">' + l.nr + '</span><br><b>' + U.esc(l.name) + '</b>' +
+                    '<br><span class="tag">' + U.esc(l.en) + '</span>',
+                    U.esc(l.aufgabe), U.esc(l.bsp), U.esc(l.tcpip)];
+          }));
+
+      case 'netzgeraete':
+        return tabelle(['Gerät', 'Schicht', 'Aufgabe'],
+          waehle(D.netzgeraete).map(function (g) {
+            return ['<b>' + U.esc(g.icon + ' ' + g.name) + '</b>',
+                    '<span class="tag tag--art">' + U.esc(String(g.schicht)) + '</span>',
+                    U.esc(g.aufgabe)];
+          }));
+
+      case 'netzprotokolle':
+        return tabelle(['Protokoll', 'Port', 'Schicht', 'Aufgabe'],
+          waehle(D.netzprotokolle).map(function (p) {
+            return ['<b>' + U.esc(p.name) + '</b>', U.esc(p.port),
+                    '<span class="tag tag--art">' + U.esc(String(p.schicht)) + '</span>',
+                    U.esc(p.aufgabe)];
+          }));
+
+      case 'ipklassen':
+        return tabelle(['Bereich', 'Von – bis', 'Standardmaske', 'Hinweis'],
+          waehle(D.ipklassen).map(function (k) {
+            return ['<b>' + U.esc(k.name) + '</b>', U.esc(k.bereich), U.esc(k.maske), k.hinweis];
+          }));
+
+      case 'subnetze':
+        return tabelle(['Präfix', 'Subnetzmaske', 'Nutzbare Hosts', 'Subnetze aus einem /24'],
+          waehle(D.subnetze).map(function (n) {
+            return ['<span class="tag tag--art">' + U.esc(n.praefix) + '</span>',
+                    U.esc(n.maske), '<b>' + U.esc(n.hosts) + '</b>', U.esc(n.teile)];
+          }));
+
+      case 'topologien':
+        return tabelle(['Topologie', 'Aufbau', 'Vorteil', 'Nachteil'],
+          waehle(D.topologien).map(function (t) {
+            return ['<b>' + U.esc(t.icon + ' ' + t.name) + '</b>', U.esc(t.aufbau),
+                    '<span class="tag tag--ok">+</span> ' + U.esc(t.vorteil),
+                    '<span class="tag tag--bad">−</span> ' + U.esc(t.nachteil)];
+          }));
+
+      case 'netzwerkzeuge':
+        return tabelle(['Befehl', 'Zeigt', 'Einsatz'],
+          waehle(D.netzwerkzeuge).map(function (w) {
+            return ['<b>' + w.befehl + '</b>', U.esc(w.zeigt), U.esc(w.einsatz)];
+          }));
+
+      case 'verkabelung':
+        return tabelle(['Bereich', 'Was er verbindet', 'Medium'],
+          waehle(D.verkabelung).map(function (v) {
+            return ['<b>' + U.esc(v.name) + '</b><br><span class="tag">' + U.esc(v.ebene) + '</span>' +
+                    ' <span class="tag tag--art">' + U.esc(v.laenge) + '</span>',
+                    U.esc(v.was), U.esc(v.medium)];
+          }));
+
+      case 'routing':
+        return tabelle(['Art', 'Woher', 'Bedeutung'],
+          waehle(D.routing).map(function (r) {
+            return ['<b>' + U.esc(r.name) + '</b>',
+                    '<span class="tag">' + U.esc(r.herkunft) + '</span>',
+                    U.esc(r.erklaerung)];
+          }));
+
       case 'pruefregeln':
         return tabelle(['Befund', 'Norm'],
           waehle(D.pruefregeln).map(function (r) {

@@ -18,12 +18,14 @@ Das Format ist unabhängig vom Thema: Gespräche, Lexikon und Merksätze liegen 
 eigenen Dateien unter `data/`, getrennt vom Programm. Weitere Themengebiete
 kommen als zusätzliche Dateien dazu. Den Anfang macht **Datenschutz,
 Informationssicherheit und Compliance** (Fachinformatiker, Modul IV,
-IHK-Prüfung). Dazugekommen ist **Verschlüsselung und Kryptographie**.
+IHK-Prüfung). Dazugekommen sind **Verschlüsselung und Kryptographie** sowie
+**Netzwerktechnik**.
 
 | Themengebiet | Gesprächspartner | Gespräche |
 |---|---|---|
 | IT-Sicherheit und Datenschutz | 5 | 33 |
 | Verschlüsselung und Kryptographie | 5 | 21 |
+| Netzwerktechnik | 5 | 37 |
 
 Eine Sache pro Bildschirm. Kein Drag & Drop, kein Zoom, keine Einarbeitung.
 Funktioniert am Rechner und auf dem Handy.
@@ -69,6 +71,25 @@ sieben Minuten.
 | **Frau Teichmann** | siezt dich | will Entscheidungen, keine Theorie | Verfahrensauswahl, Altlasten, DSGVO-Bezug, Grenzen der Verschlüsselung | 4 |
 | **Jonas** | duzt dich | 1. Lehrjahr, ratlos, Emojis | Klartext und Geheimtext, Caesar, Kerckhoffs, Grundbegriffe | 4 |
 | **#krypto-alarm** | Gruppenchat | mehrere Sprecher, farblich getrennt | Falsche Prüfsumme, abgelaufenes Zertifikat, geleakte Passwortdatenbank | 3 |
+
+### Themengebiet „Netzwerktechnik"
+
+| Kontakt | Anrede | Ton | Themen | Gespräche |
+|---|---|---|---|---|
+| **Mirko Pahlke** | duzt dich | praktisch, erklärt am Gerät | OSI-Modell, Switch und Router, Medien und Verkabelung, VLAN, Topologien | 9 |
+| **Herr Semmler** | duzt dich | rechnet mit, will genaue Zahlen | IP-Adressen, Subnetzmaske, Subnetting, Binär, VLSM, NAT, IPv6, Routing | 8 |
+| **Frau Dankwart** | siezt dich | will eine Empfehlung mit Begründung | WLAN oder Kabel, Standortvernetzung, Ausfallsicherheit, Cloud, Homeoffice, Umzug | 7 |
+| **Leonie** | duzt dich | 1. Lehrjahr, fragt nach, Emojis | LAN und WAN, DHCP, DNS und Ports, TCP und UDP, MAC und IP, Netzplan | 7 |
+| **#netz-stoerung** | Gruppenchat | mehrere Sprecher, farblich getrennt | Kein Netz im Lager, doppelte IP, Schleife, DNS-Ausfall, Engpass, VLAN-Fehler | 6 |
+
+Zusammen **37 Gespräche** mit **144 Entscheidungen**. Der Rechenteil – Maske,
+nutzbare Hosts, binäre UND-Verknüpfung, Subnetting und VLSM, Übertragungsdauer –
+steckt bei Herrn Semmler und zum Teil bei Leonie.
+
+Zwei Gespräche verfolgen den Stoff bewusst von einem Ende zum anderen: Mirkos
+„Ein Klick, sieben Schichten" geht einen Seitenaufruf von DNS über ARP und den
+TCP-Handschlag bis zur Kapselung durch, und Herrn Semmlers „Vier Netze, vier
+Größen" schneidet ein /24 nach Bedarf in vier verschieden große Teilnetze.
 
 Jede Person hat eine eigene Sprechweise – das ist Absicht: Bei Tim und Jonas
 **erklärst du**, bei Frau Hagedorn und Frau Teichmann **entscheidest und
@@ -162,10 +183,20 @@ audit/
 │   ├── dialoge-projekt.js      Krypto: Auswahl, Altlasten, Grenzen
 │   ├── dialoge-jonas.js        Krypto: Grundbegriffe (du erklärst)
 │   ├── dialoge-kryptoalarm.js  Krypto: Gruppenchat mit drei Fällen
+│   ├── dialoge-mirko.js        Netz: Geräte, Medien, OSI, VLAN, Topologie
+│   ├── dialoge-planer.js       Netz: Adressen, Masken, Subnetting, NAT, IPv6
+│   ├── dialoge-standort.js     Netz: Entscheidungen zu Funk, Standorten, Ausfall
+│   ├── dialoge-leonie.js       Netz: Grundbegriffe (du erklärst)
+│   ├── dialoge-netzstoerung.js Netz: Gruppenchat mit drei Störungen
 │   ├── lexikon.js              Kurzdefinitionen, je mit gebiet
 │   ├── lexikon-krypto.js       Kurzdefinitionen zum Themengebiet krypto
+│   ├── lexikon-netz.js         Kurzdefinitionen zum Themengebiet netz
 │   ├── kryptoverfahren.js      Tabellen: symmetrisch, asymmetrisch,
 │   │                           hybrid, Hashverfahren
+│   ├── netzwerk.js             Tabellen: OSI-Schichten, Geräte, Protokolle
+│   │                           und Ports, Adressklassen, Subnetzmasken,
+│   │                           Topologien, Werkzeuge der Fehlersuche,
+│   │                           strukturierte Verkabelung, Routing-Arten
 │   ├── schadsoftware.js        \
 │   ├── massnahmen.js            |  Nachschlagewerke: liefern die
 │   ├── dsgvo.js                 |  Übersichtstabellen, die mitten
@@ -235,6 +266,10 @@ von Übersichtstabelle**, dann kommt ein weiterer Fall in `karteInhalt()` in
 Ein Gebiet, zu dem es noch keine Gespräche gibt, erscheint in der Übersicht als
 „bald" und lässt sich nicht öffnen – man kann es also schon eintragen, während
 die Inhalte noch entstehen.
+
+Für das Themengebiet Netzwerktechnik liefert `data/netzwerk.js` neun
+Übersichtstabellen: `osi`, `netzgeraete`, `netzprotokolle`, `ipklassen`,
+`subnetze`, `topologien`, `netzwerkzeuge`, `verkabelung` und `routing`.
 
 **Schritt-Typen:** `nachricht` · `frage` (genau eine richtige) · `mehrfach`
 (alle richtigen ankreuzen) · `karte` (Tabelle aus einer `data/`-Datei über

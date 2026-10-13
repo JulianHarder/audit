@@ -47,6 +47,16 @@ AUDIT.data.themen = [
     vorstellung: 'Rampe 7 stellt die Verschlüsselung um. Vier Leute ziehen dich hinein – ' +
                  'du entscheidest mit, und du bekommst sofort die Begründung dazu.',
     kontakte: ['nadja', 'berater', 'projekt', 'jonas', 'kryptoalarm']
+  },
+  {
+    key: 'netz',
+    name: 'Netzwerktechnik',
+    kopf: 'Netzwerktechnik',
+    bild: '🌐',
+    kurz: 'OSI-Modell, IP-Adressen und Subnetting, Protokolle, WLAN und Fehlersuche',
+    vorstellung: 'Rampe 7 baut das Netz im Lager neu auf und hängt den zweiten Standort an. ' +
+                 'Vier Leute brauchen dabei deine Entscheidung – die Begründung bekommst du sofort dazu.',
+    kontakte: ['mirko', 'planer', 'standort', 'leonie', 'netzstoerung']
   }
 ];
 

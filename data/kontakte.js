@@ -91,6 +91,49 @@ AUDIT.data.kontakte = [
     bild: '🔓',
     themen: 'Falsche Prüfsumme, ungültiges Zertifikat, geleakte Passwörter',
     vorstellung: 'Der Kanal für die Fälle, bei denen die Kryptographie nicht hält, was sie verspricht.'
+  },
+
+  /* ---------- Themengebiet "Netzwerktechnik" ---------- */
+
+  {
+    key: 'mirko',
+    name: 'Mirko Pahlke',
+    rolle: 'Netzwerkadministration',
+    bild: '🧰',
+    themen: 'OSI-Modell, Switch und Router, Ethernet, VLAN',
+    vorstellung: 'Mirko zieht die Kabel und konfiguriert die Switches. Er erklärt alles am Gerät, das gerade vor ihm liegt.'
+  },
+  {
+    key: 'planer',
+    name: 'Herr Semmler',
+    rolle: 'Netzplanung (extern)',
+    bild: '📐',
+    themen: 'IP-Adressen, Subnetzmaske, Subnetting, NAT, IPv6',
+    vorstellung: 'Plant das neue Adresskonzept. Rechnet gern mit dir mit und legt Wert darauf, dass die Zahlen stimmen.'
+  },
+  {
+    key: 'standort',
+    name: 'Frau Dankwart',
+    rolle: 'Standortleitung',
+    bild: '📊',
+    themen: 'WLAN oder Kabel, Standortvernetzung, Ausfallsicherheit, Kosten',
+    vorstellung: 'Verantwortet den Standort Bremen. Sie will eine Empfehlung mit Begründung, keine Produktliste.'
+  },
+  {
+    key: 'leonie',
+    name: 'Leonie',
+    rolle: 'Azubi, 1. Lehrjahr',
+    bild: '🎧',
+    themen: 'LAN und WAN, Topologien, Ports, DHCP und DNS',
+    vorstellung: 'Frisch im Betrieb und fragt gnadenlos nach. Bei ihr erklärst du – wer erklären kann, hat es verstanden.'
+  },
+  {
+    key: 'netzstoerung',
+    name: '#netz-stoerung',
+    rolle: 'Gruppenchat',
+    bild: '📡',
+    themen: 'Kein Netz im Lager, doppelte IP-Adresse, Schleife im Switch',
+    vorstellung: 'Der Kanal für den Moment, in dem im Lager nichts mehr geht und alle gleichzeitig schreiben.'
   }
 ];
 
@@ -115,7 +158,14 @@ AUDIT.data.sprecher = [
   { key: 'nadja',      name: 'Nadja (Systeme)',         farbe: '#22d3ee' },
   { key: 'baumgart',   name: 'Herr Baumgart (Berater)', farbe: '#c084fc' },
   { key: 'teichmann',  name: 'Frau Teichmann (Projekt)', farbe: '#fbbf24' },
-  { key: 'jonas',      name: 'Jonas (Azubi)',           farbe: '#4ade80' }
+  { key: 'jonas',      name: 'Jonas (Azubi)',           farbe: '#4ade80' },
+
+  /* Themengebiet Netzwerktechnik */
+  { key: 'mirko',      name: 'Mirko (Netzwerk)',        farbe: '#38bdf8' },
+  { key: 'semmler',    name: 'Herr Semmler (Planung)',  farbe: '#c084fc' },
+  { key: 'dankwart',   name: 'Frau Dankwart (Standort)', farbe: '#fbbf24' },
+  { key: 'leonie',     name: 'Leonie (Azubi)',          farbe: '#4ade80' },
+  { key: 'kleinschmidt', name: 'Herr Kleinschmidt (Lager)', farbe: '#fb923c' }
 ];
 AUDIT.data.sprecherMap = {};
 AUDIT.data.sprecher.forEach(function (s) { AUDIT.data.sprecherMap[s.key] = s; });
