@@ -233,6 +233,34 @@ AUDIT.chat = (function () {
                     '<span class="tag tag--art">' + U.esc(r.norm) + '</span>'];
           }));
 
+      /* ---------- Gebiet "Cookies, Tracking und ePrivacy" ---------- */
+
+      /* "Nein" ist hier die unproblematische Antwort (keine Einwilligung
+         noetig) und wird gruen gesetzt, alles andere gelb. */
+      case 'cookiearten':
+        return tabelle(['Sorte', 'Einwilligung?', 'Wofür', 'Beispiele'],
+          waehle(D.cookiearten).map(function (c) {
+            var art = /^nein/i.test(c.einwilligung) ? 'ok' : 'hoch';
+            return ['<b>' + U.esc(c.name) + '</b>',
+                    '<span class="tag tag--' + art + '">' + U.esc(c.einwilligung) + '</span>',
+                    c.zweck, U.esc(c.bsp)];
+          }));
+
+      case 'rechtsrahmen':
+        return tabelle(['Regelwerk', 'Regelt', 'Geltung'],
+          waehle(D.rechtsrahmen).map(function (r) {
+            return ['<b>' + U.esc(r.name) + '</b>' +
+                    (r.norm && r.norm !== '–' ? '<br><span class="tag tag--art">' + U.esc(r.norm) + '</span>' : ''),
+                    r.regelt, r.rolle];
+          }));
+
+      case 'consentregeln':
+        return tabelle(['Anforderung', 'Verlangt ist', 'Typischer Verstoß'],
+          waehle(D.consentregeln).map(function (c) {
+            return ['<b>' + U.esc(c.name) + '</b><br><span class="tag tag--art">' + U.esc(c.norm) + '</span>',
+                    U.esc(c.muss), U.esc(c.fehler)];
+          }));
+
       default:
         return schritt.html || '';
     }
@@ -401,7 +429,9 @@ AUDIT.chat = (function () {
       /* Einmal beim Aufbau gemischt und dann stehengelassen – sonst
          wuerden die Knoepfe nach einem Fehlversuch springen. */
       var optionen = reihenfolge(s);
-      var kopf = U.el('div', { class: 'chat__frage', text: s.text || 'Deine Antwort' });
+      /* Wie in den Blasen: <b> und [[Begriff]] sollen auch in der
+         Fragezeile wirken, nicht als Zeichenkette erscheinen. */
+      var kopf = U.el('div', { class: 'chat__frage', html: U.rich(s.text || 'Deine Antwort') });
       antworten.appendChild(kopf);
       var knoepfe = [];
 
@@ -480,7 +510,7 @@ AUDIT.chat = (function () {
 
     function mehrfach(s) {
       U.clear(antworten);
-      antworten.appendChild(U.el('div', { class: 'chat__frage', text: s.text || 'Mehrere sind richtig' }));
+      antworten.appendChild(U.el('div', { class: 'chat__frage', html: U.rich(s.text || 'Mehrere sind richtig') }));
       var gewaehlt = {};
       var versuche = 0;
       var knoepfe = [];

@@ -18,14 +18,19 @@ Das Format ist unabhängig vom Thema: Gespräche, Lexikon und Merksätze liegen 
 eigenen Dateien unter `data/`, getrennt vom Programm. Weitere Themengebiete
 kommen als zusätzliche Dateien dazu. Den Anfang macht **Datenschutz,
 Informationssicherheit und Compliance** (Fachinformatiker, Modul IV,
-IHK-Prüfung). Dazugekommen sind **Verschlüsselung und Kryptographie** sowie
-**Netzwerktechnik**.
+IHK-Prüfung). Dazugekommen sind **Verschlüsselung und Kryptographie**,
+**Netzwerktechnik** sowie **Cookies, Tracking und ePrivacy**. Zwei weitere
+Gebiete sind angelegt, aber noch ohne Gespräche – sie erscheinen in der
+Übersicht als „bald".
 
 | Themengebiet | Gesprächspartner | Gespräche |
 |---|---|---|
 | IT-Sicherheit und Datenschutz | 5 | 33 |
 | Verschlüsselung und Kryptographie | 5 | 21 |
 | Netzwerktechnik | 5 | 37 |
+| Cookies, Tracking und ePrivacy | 5 | 23 |
+| KI im Betrieb und der EU AI Act | 5 | – (bald) |
+| Penetrationstest, Softwaretest und Audit | 6 | – (bald) |
 
 Eine Sache pro Bildschirm. Kein Drag & Drop, kein Zoom, keine Einarbeitung.
 Funktioniert am Rechner und auf dem Handy.
@@ -90,6 +95,27 @@ Zwei Gespräche verfolgen den Stoff bewusst von einem Ende zum anderen: Mirkos
 „Ein Klick, sieben Schichten" geht einen Seitenaufruf von DNS über ARP und den
 TCP-Handschlag bis zur Kapselung durch, und Herrn Semmlers „Vier Netze, vier
 Größen" schneidet ein /24 nach Bedarf in vier verschieden große Teilnetze.
+
+### Themengebiet „Cookies, Tracking und ePrivacy"
+
+| Kontakt | Anrede | Ton | Themen | Gespräche |
+|---|---|---|---|---|
+| **Frau Dr. Keilhauer** | siezt dich | nennt zuerst die Norm, dann die Folge | ePrivacy-Richtlinie und TDDDG, Verbot mit Erlaubnisvorbehalt, Einwilligung, Planet49, Drittland | 5 |
+| **Kevin Ostrowski** | duzt dich | denkt in Technik, fragt nach dem Erlaubten | Notwendig oder nicht, Session und persistent, Local Storage, Fingerprinting, Consent-Tool, Drittanbieter | 5 |
+| **Marion Rebholz** | duzt dich | direkt, argumentiert vom Nutzen her | Analyse ohne Einwilligung, Reichweitenmessung, Newsletter, Retargeting, Zustimmungsquote | 5 |
+| **Merle** | duzt dich | 1. Lehrjahr, fragt ohne Fachsprache | Was ist ein Cookie, First und Third Party, Banner gegen Datenschutzerklärung, „anonym" | 4 |
+| **#banner-alarm** | Gruppenchat | mehrere Sprecher, farblich getrennt | Beschwerde, Anfrage der Aufsichtsbehörde, Abmahnung wegen Schriftart, Analytics ohne Einwilligung | 4 |
+
+Zusammen **23 Gespräche** mit **107 Entscheidungen**. Der rechtliche Kern liegt
+bei Frau Dr. Keilhauer: die beiden Prüfstufen – § 25 TDDDG für den Zugriff auf
+das Endgerät, Art. 6 DSGVO für die Daten danach – ziehen sich durch das ganze
+Gebiet.
+
+### Themengebiete „KI und AI Act" sowie „Tests und Audit"
+
+Beide Gebiete sind in `data/themen.js` und `data/kontakte.js` angelegt, die
+Gespräche fehlen noch. Sie erscheinen in der Übersicht als „bald" und lassen
+sich noch nicht öffnen.
 
 Jede Person hat eine eigene Sprechweise – das ist Absicht: Bei Tim und Jonas
 **erklärst du**, bei Frau Hagedorn und Frau Teichmann **entscheidest und
@@ -172,7 +198,7 @@ audit/
 │   └── chat.css                Kontaktliste, Sprechblasen, Antwortknöpfe
 ├── data/                       nur Inhalte – hier ergänzt und korrigiert man
 │   ├── themen.js               die Themengebiete, oberste Ebene
-│   ├── kontakte.js             die fünf Gesprächspartner
+│   ├── kontakte.js             alle Gesprächspartner und die Sprecherfarben
 │   ├── dialoge-sabrina.js      IT: Schadsoftware und Schutzmaßnahmen
 │   ├── dialoge-dsb.js          Datenschutzrecht
 │   ├── dialoge-chefin.js       Schutzziele, Schutzbedarf, Rollen
@@ -188,15 +214,26 @@ audit/
 │   ├── dialoge-standort.js     Netz: Entscheidungen zu Funk, Standorten, Ausfall
 │   ├── dialoge-leonie.js       Netz: Grundbegriffe (du erklärst)
 │   ├── dialoge-netzstoerung.js Netz: Gruppenchat mit drei Störungen
+│   ├── dialoge-anwaeltin.js    Web: ePrivacy, TDDDG, Verbotsprinzip, Drittland
+│   ├── dialoge-webdev.js       Web: Cookie-Arten, Consent-Tool, Drittanbieter
+│   ├── dialoge-marketing.js    Web: Analyse, Newsletter, Retargeting, Quote
+│   ├── dialoge-merle.js        Web: Grundbegriffe (du erklärst)
+│   ├── dialoge-banneralarm.js  Web: Gruppenchat mit vier Beanstandungen
 │   ├── lexikon.js              Kurzdefinitionen, je mit gebiet
 │   ├── lexikon-krypto.js       Kurzdefinitionen zum Themengebiet krypto
 │   ├── lexikon-netz.js         Kurzdefinitionen zum Themengebiet netz
+│   ├── lexikon-web.js          Kurzdefinitionen zum Themengebiet web;
+│   │                           erweitert am Ende das gebiet geteilter
+│   │                           Begriffe aus lexikon.js um 'web'
 │   ├── kryptoverfahren.js      Tabellen: symmetrisch, asymmetrisch,
 │   │                           hybrid, Hashverfahren
 │   ├── netzwerk.js             Tabellen: OSI-Schichten, Geräte, Protokolle
 │   │                           und Ports, Adressklassen, Subnetzmasken,
 │   │                           Topologien, Werkzeuge der Fehlersuche,
 │   │                           strukturierte Verkabelung, Routing-Arten
+│   ├── web.js                  Tabellen: Cookie-Arten, Rechtsrahmen
+│   │                           (ePrivacy/TDDDG/DSGVO), Prüfpunkte für
+│   │                           ein Consent-Banner
 │   ├── schadsoftware.js        \
 │   ├── massnahmen.js            |  Nachschlagewerke: liefern die
 │   ├── dsgvo.js                 |  Übersichtstabellen, die mitten

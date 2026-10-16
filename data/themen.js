@@ -57,6 +57,39 @@ AUDIT.data.themen = [
     vorstellung: 'Rampe 7 baut das Netz im Lager neu auf und hängt den zweiten Standort an. ' +
                  'Vier Leute brauchen dabei deine Entscheidung – die Begründung bekommst du sofort dazu.',
     kontakte: ['mirko', 'planer', 'standort', 'leonie', 'netzstoerung']
+  },
+  {
+    key: 'web',
+    name: 'Cookies, Tracking und ePrivacy',
+    kopf: 'Cookies & Tracking',
+    bild: '🍪',
+    kurz: 'ePrivacy und TDDDG, Cookie-Arten, Banner und Einwilligung, Tracking und Drittland',
+    vorstellung: 'Rampe 7 bekommt einen neuen Onlineshop, und beim Cookie-Banner gehen die Meinungen ' +
+                 'auseinander. Fünf Leute ziehen dich hinein – du entscheidest mit, und die Begründung ' +
+                 'bekommst du sofort dazu.',
+    kontakte: ['anwaeltin', 'webdev', 'marketing', 'merle', 'banneralarm']
+  },
+  {
+    key: 'ki',
+    name: 'KI im Betrieb und der EU AI Act',
+    kopf: 'KI & AI Act',
+    bild: '🤖',
+    kurz: 'Risikoklassen, Pflichten für Anbieter und Betreiber, Transparenz, KI und DSGVO',
+    vorstellung: 'Rampe 7 probiert KI aus: ein Assistent in der Disposition, ein Chatbot im ' +
+                 'Kundenkontakt, eine Software für die Bewerberauswahl. Jedes Mal ist die Frage, was ' +
+                 'erlaubt ist – die Begründung bekommst du sofort dazu.',
+    kontakte: ['kirecht', 'kiprojekt', 'personal', 'noah', 'kivorfall']
+  },
+  {
+    key: 'tests',
+    name: 'Penetrationstest, Softwaretest und Audit',
+    kopf: 'Tests & Audit',
+    bild: '🔍',
+    kurz: 'Blackbox, Greybox, Whitebox – im Pentest und im Softwaretest, dazu Audit und ISMS',
+    vorstellung: 'Rampe 7 lässt prüfen: ein Penetrationstest von außen, ein Audit nach ISO 27001, und ' +
+                 'die eigene Lagersoftware muss getestet werden. Sechs Leute brauchen deine ' +
+                 'Entscheidung – die Begründung bekommst du sofort dazu.',
+    kontakte: ['pentest', 'entwickler', 'auditor', 'itleitung', 'pia', 'pentestwoche']
   }
 ];
 

@@ -241,6 +241,28 @@ AUDIT.data.dialoge.push({
           antwort: 'Rechtmäßig erhoben heißt nicht beliebig verwendbar. Die [[Zweckbindung]] erlaubt nur den Zweck, für den wir sie erhoben haben.' }
       ] },
 
+    { typ: 'nachricht', text: 'Sie sagen „braucht eine eigene Rechtsgrundlage". Dahinter steht ein Grundsatz, der die Reihenfolge jeder datenschutzrechtlichen Prüfung bestimmt. Können Sie ihn benennen?' },
+
+    { typ: 'frage', text: 'Wie lautet der Grundsatz, aus dem sich das ergibt?',
+      optionen: [
+        { text: 'Verbot mit Erlaubnisvorbehalt – verboten, sofern nicht erlaubt', richtig: true, norm: 'Art. 6 Abs. 1 DSGVO',
+          antwort: 'Richtig. Jede [[Verarbeitung]] personenbezogener Daten ist zunächst <b>untersagt</b> und wird erst rechtmäßig, wenn eine der sechs [[Rechtsgrundlage|Rechtsgrundlagen des Art. 6 Abs. 1]] greift. Nicht das Verbot muss begründet werden, sondern die Erlaubnis – und zwar vor jeder Verarbeitung, für jeden Zweck einzeln.' },
+        { text: 'Erlaubnis mit Verbotsvorbehalt – erlaubt, bis es untersagt wird',
+          antwort: 'Das ist die Umkehrung und der häufigste Fehler in der Prüfung. Im allgemeinen Wirtschaftsrecht gilt oft die Freiheit als Regel; im Datenschutzrecht ist die Reihenfolge genau umgekehrt.' },
+        { text: 'Datenminimierung',
+          antwort: '[[Datenminimierung]] ist einer der [[Grundsätze der Verarbeitung|Grundsätze aus Art. 5]] und gilt zusätzlich – sie betrifft den <b>Umfang</b>. Gesucht war der Satz über die Rechtmäßigkeit als solche.' }
+      ] },
+
+    { typ: 'frage', text: 'Und wer muss im Streitfall belegen, dass eine Erlaubnis bestand?',
+      optionen: [
+        { text: 'Der Verantwortliche – das ist die Rechenschaftspflicht', richtig: true, norm: 'Art. 5 Abs. 2 DSGVO',
+          antwort: 'Genau. Art. 5 Abs. 2 DSGVO kehrt die Darlegungslast um: Der [[Verantwortlicher|Verantwortliche]] muss die Einhaltung <b>nachweisen können</b>. Die betroffene Person sieht ja nicht, was intern geschieht – sie muss nichts beweisen. Deshalb heißt der Grundsatz [[Rechenschaftspflicht]].' },
+        { text: 'Die betroffene Person muss die Rechtswidrigkeit beweisen',
+          antwort: 'Dann wäre der Schutz wertlos, weil ihr die Einblicke fehlen. Art. 5 Abs. 2 DSGVO legt die Last ausdrücklich auf den Verantwortlichen.' },
+        { text: 'Die Aufsichtsbehörde muss den Verstoß beweisen',
+          antwort: 'Die [[Aufsichtsbehörde]] prüft und kann Auskunft verlangen. Nachweisen muss die Rechtmäßigkeit aber der Verantwortliche selbst.' }
+      ] },
+
     { typ: 'frage', text: 'Worauf stützen wir die Werbung?',
       optionen: [
         { text: 'Einwilligung der Kunden', richtig: true,
