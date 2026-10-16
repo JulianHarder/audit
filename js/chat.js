@@ -261,6 +261,45 @@ AUDIT.chat = (function () {
                     U.esc(c.muss), U.esc(c.fehler)];
           }));
 
+      /* ---------- Gebiet "Penetrationstest, Softwaretest und Audit" ---------- */
+
+      case 'boxverfahren':
+        return tabelle(['Verfahren', 'Informationsstand', 'Aufwand', 'Findet', 'Findet nicht'],
+          waehle(D.boxverfahren).map(function (b) {
+            return ['<b>' + U.esc(b.name) + '</b><br><span class="tag">' + U.esc(b.wofuer) + '</span>',
+                    U.esc(b.stand), U.esc(b.aufwand),
+                    '<span class="tag tag--ok">+</span> ' + U.esc(b.findet),
+                    '<span class="tag tag--bad">−</span> ' + U.esc(b.nicht)];
+          }));
+
+      case 'pentestphasen':
+        return tabelle(['Phase', 'Inhalt', 'Ergebnis'],
+          waehle(D.pentestphasen).map(function (p) {
+            return ['<span class="tag tag--art">' + p.nr + '</span><br><b>' + U.esc(p.name) + '</b>',
+                    p.inhalt, p.ergebnis];
+          }));
+
+      /* "art" ist Blackbox oder Whitebox – die beiden Lesarten des
+         Gebiets. Blackbox wird gelb, Whitebox gruen gesetzt, damit
+         die Zuordnung in der Tabelle sofort sichtbar ist. */
+      case 'testentwurf':
+        return tabelle(['Verfahren', 'Art', 'Idee', 'Beispiel', 'Findet'],
+          waehle(D.testentwurf).map(function (t) {
+            var art = /^black/i.test(t.art) ? 'hoch' : 'ok';
+            return ['<b>' + U.esc(t.name) + '</b>',
+                    '<span class="tag tag--' + art + '">' + U.esc(t.art) + '</span>',
+                    t.idee, t.bsp, U.esc(t.findet)];
+          }));
+
+      case 'teststufen':
+        return tabelle(['Stufe', 'Was geprüft wird', 'Wer prüft', 'Prüfgrundlage', 'Sicht'],
+          waehle(D.teststufen).map(function (s) {
+            return ['<b>' + U.esc(s.name) + '</b><br><span class="tag">' + U.esc(s.auch) + '</span>',
+                    U.esc(s.was) + '<br><span class="tag">' + U.esc(s.hinweis) + '</span>',
+                    U.esc(s.wer), U.esc(s.grundlage),
+                    '<span class="tag tag--art">' + U.esc(s.sicht) + '</span>'];
+          }));
+
       default:
         return schritt.html || '';
     }

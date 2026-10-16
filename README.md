@@ -19,9 +19,10 @@ eigenen Dateien unter `data/`, getrennt vom Programm. Weitere Themengebiete
 kommen als zusätzliche Dateien dazu. Den Anfang macht **Datenschutz,
 Informationssicherheit und Compliance** (Fachinformatiker, Modul IV,
 IHK-Prüfung). Dazugekommen sind **Verschlüsselung und Kryptographie**,
-**Netzwerktechnik** sowie **Cookies, Tracking und ePrivacy**. Zwei weitere
-Gebiete sind angelegt, aber noch ohne Gespräche – sie erscheinen in der
-Übersicht als „bald".
+**Netzwerktechnik**, **Cookies, Tracking und ePrivacy** sowie
+**Penetrationstest, Softwaretest und Audit**. Ein weiteres Gebiet ist
+angelegt, aber noch ohne Gespräche – es erscheint in der Übersicht als
+„bald".
 
 | Themengebiet | Gesprächspartner | Gespräche |
 |---|---|---|
@@ -30,7 +31,7 @@ Gebiete sind angelegt, aber noch ohne Gespräche – sie erscheinen in der
 | Netzwerktechnik | 5 | 37 |
 | Cookies, Tracking und ePrivacy | 5 | 23 |
 | KI im Betrieb und der EU AI Act | 5 | – (bald) |
-| Penetrationstest, Softwaretest und Audit | 6 | – (bald) |
+| Penetrationstest, Softwaretest und Audit | 6 | 27 |
 
 Eine Sache pro Bildschirm. Kein Drag & Drop, kein Zoom, keine Einarbeitung.
 Funktioniert am Rechner und auf dem Handy.
@@ -111,10 +112,28 @@ bei Frau Dr. Keilhauer: die beiden Prüfstufen – § 25 TDDDG für den Zugriff 
 das Endgerät, Art. 6 DSGVO für die Daten danach – ziehen sich durch das ganze
 Gebiet.
 
-### Themengebiete „KI und AI Act" sowie „Tests und Audit"
+### Themengebiet „Penetrationstest, Softwaretest und Audit"
 
-Beide Gebiete sind in `data/themen.js` und `data/kontakte.js` angelegt, die
-Gespräche fehlen noch. Sie erscheinen in der Übersicht als „bald" und lassen
+| Kontakt | Anrede | Ton | Themen | Gespräche |
+|---|---|---|---|---|
+| **Yasmin Sarközi** | duzt dich | direkt und trocken, trennt „gefunden" von „ausgenutzt" | Blackbox/Greybox/Whitebox als Informationsstand, Pentest-Phasen, Scope und Abbruchkriterien, Scan gegen Pentest | 5 |
+| **Deniz Kaymak** | duzt dich | kollegial, rechnet Testfälle am eigenen Code vor | Blackbox/Whitebox als Testentwurf, Äquivalenzklassen, Grenzwertanalyse, C0/C1/Pfad, Teststufen, Regressionstest | 5 |
+| **Herr Lindemann** | siezt dich | förmlich, fragt dreimal nach dem Dokument | Internes und externes Audit, ISMS und PDCA, Nachweise, ISO 27001 und IT-Grundschutz, Zertifizierung | 5 |
+| **Frau Brehm** | siezt dich | will eine Empfehlung mit Begründung | Verfahren und Kosten, Beauftragung und Freigabe, §§ 202a–c StGB, Haftung, Bericht und Nachtest | 4 |
+| **Pia** | duzt dich | 2. Lehrjahr, hartnäckig, hält dir ihre Notizen hin | Die zwei Bedeutungen von Blackbox, Schwachstelle und Exploit, CVE und CVSS | 4 |
+| **#pentest-woche** | Gruppenchat | mehrere Sprecher, farblich getrennt | Alarm im SIEM, Red/Blue/Purple Team, Abbruchkriterien, Auswertung und Nachtest | 4 |
+
+Zusammen **27 Gespräche** mit **118 Entscheidungen**. Dieses Gebiet hat als
+einziges sechs Partner, weil **Blackbox, Greybox und Whitebox in zwei Lesarten**
+geprüft werden: bei Yasmin als *Informationsstand des Testers* im
+Penetrationstest, bei Deniz als *Testentwurfsverfahren* im Softwaretest. Pias
+erstes Gespräch stellt die beiden Bedeutungen ausdrücklich gegenüber – das ist
+das Kernstück des Gebiets.
+
+### Themengebiet „KI im Betrieb und der EU AI Act"
+
+Das Gebiet ist in `data/themen.js` und `data/kontakte.js` angelegt, die
+Gespräche fehlen noch. Es erscheint in der Übersicht als „bald" und lässt
 sich noch nicht öffnen.
 
 Jede Person hat eine eigene Sprechweise – das ist Absicht: Bei Tim und Jonas
@@ -219,12 +238,21 @@ audit/
 │   ├── dialoge-marketing.js    Web: Analyse, Newsletter, Retargeting, Quote
 │   ├── dialoge-merle.js        Web: Grundbegriffe (du erklärst)
 │   ├── dialoge-banneralarm.js  Web: Gruppenchat mit vier Beanstandungen
+│   ├── dialoge-pentest.js      Tests: Informationsstand, Phasen, Scope, Scan
+│   ├── dialoge-entwickler.js   Tests: Testentwurf, Abdeckung, Teststufen
+│   ├── dialoge-auditor.js      Tests: Audit, ISMS, Nachweise, Zertifizierung
+│   ├── dialoge-itleitung.js    Tests: Auswahl, Beauftragung, Recht, Bericht
+│   ├── dialoge-pia.js          Tests: die zwei Lesarten (du erklärst)
+│   ├── dialoge-pentestwoche.js Tests: Gruppenchat während der Testwoche
 │   ├── lexikon.js              Kurzdefinitionen, je mit gebiet
 │   ├── lexikon-krypto.js       Kurzdefinitionen zum Themengebiet krypto
 │   ├── lexikon-netz.js         Kurzdefinitionen zum Themengebiet netz
 │   ├── lexikon-web.js          Kurzdefinitionen zum Themengebiet web;
 │   │                           erweitert am Ende das gebiet geteilter
 │   │                           Begriffe aus lexikon.js um 'web'
+│   ├── lexikon-tests.js        Kurzdefinitionen zum Themengebiet tests;
+│   │                           erweitert am Ende das gebiet geteilter
+│   │                           Begriffe aus lexikon.js um 'tests'
 │   ├── kryptoverfahren.js      Tabellen: symmetrisch, asymmetrisch,
 │   │                           hybrid, Hashverfahren
 │   ├── netzwerk.js             Tabellen: OSI-Schichten, Geräte, Protokolle
@@ -234,6 +262,9 @@ audit/
 │   ├── web.js                  Tabellen: Cookie-Arten, Rechtsrahmen
 │   │                           (ePrivacy/TDDDG/DSGVO), Prüfpunkte für
 │   │                           ein Consent-Banner
+│   ├── pruefverfahren.js       Tabellen: Box-Verfahren im Vergleich,
+│   │                           Pentest-Phasen, Testentwurfsverfahren,
+│   │                           Teststufen
 │   ├── schadsoftware.js        \
 │   ├── massnahmen.js            |  Nachschlagewerke: liefern die
 │   ├── dsgvo.js                 |  Übersichtstabellen, die mitten
@@ -306,7 +337,9 @@ die Inhalte noch entstehen.
 
 Für das Themengebiet Netzwerktechnik liefert `data/netzwerk.js` neun
 Übersichtstabellen: `osi`, `netzgeraete`, `netzprotokolle`, `ipklassen`,
-`subnetze`, `topologien`, `netzwerkzeuge`, `verkabelung` und `routing`.
+`subnetze`, `topologien`, `netzwerkzeuge`, `verkabelung` und `routing`. Für
+Tests und Audit kommen aus `data/pruefverfahren.js` vier dazu:
+`boxverfahren`, `pentestphasen`, `testentwurf` und `teststufen`.
 
 ### Die Reihenfolge der Antworten
 
