@@ -300,6 +300,70 @@ AUDIT.chat = (function () {
                     '<span class="tag tag--art">' + U.esc(s.sicht) + '</span>'];
           }));
 
+      /* ---------- Gebiet "KI im Betrieb und der EU AI Act" ---------- */
+
+      /* Die vier Risikoklassen. "stufe" faerbt die Marke von rot
+         (verboten) bis gruen (minimal) – die Rangfolge soll in der
+         Tabelle auf einen Blick zu sehen sein. */
+      case 'kirisikoklassen':
+        return tabelle(['Klasse', 'Bedeutung', 'Beispiele', 'Pflichten'],
+          waehle(D.kirisikoklassen).map(function (r) {
+            return ['<span class="tag tag--' + r.stufe + '">' + U.esc(r.name) + '</span>' +
+                    (r.gilt && r.gilt !== '–' ? '<br><span class="tag">' + U.esc(r.gilt) + '</span>' : ''),
+                    r.bedeutung, U.esc(r.bsp), U.esc(r.pflichten)];
+          }));
+
+      case 'kiverbote':
+        return tabelle(['Verbotene Praktik', 'Norm', 'Warum verboten', 'Beispiel'],
+          waehle(D.kiverbote).map(function (v) {
+            return ['<b>' + U.esc(v.name) + '</b>',
+                    '<span class="tag tag--art">' + U.esc(v.norm) + '</span>',
+                    U.esc(v.warum), U.esc(v.bsp)];
+          }));
+
+      case 'kirollen':
+        return tabelle(['Rolle', 'Wer das ist', 'Wichtigste Pflichten'],
+          waehle(D.kirollen).map(function (r) {
+            return ['<b>' + U.esc(r.name) + '</b><br><span class="tag">' + U.esc(r.en) + '</span>' +
+                    '<br><span class="tag tag--art">' + U.esc(r.norm) + '</span>',
+                    r.wer, r.pflichten];
+          }));
+
+      case 'kipflichten':
+        return tabelle(['Pflicht des Betreibers', 'Verlangt ist', 'Bei Rampe 7 heißt das'],
+          waehle(D.kipflichten).map(function (p) {
+            return ['<b>' + U.esc(p.name) + '</b><br><span class="tag tag--art">' + U.esc(p.norm) + '</span>',
+                    p.inhalt, U.esc(p.rampe7)];
+          }));
+
+      /* "wer" ist der haeufigste Irrtum des Gebiets – Anbieter oder
+         Betreiber – und steht deshalb als eigene Spalte. */
+      case 'kitransparenz':
+        return tabelle(['Fall', 'Pflicht trifft', 'Verlangt ist', 'Beispiel'],
+          waehle(D.kitransparenz).map(function (t) {
+            return ['<b>' + U.esc(t.name) + '</b><br><span class="tag tag--art">' + U.esc(t.norm) + '</span>',
+                    '<span class="tag">' + U.esc(t.wer) + '</span>',
+                    t.pflicht, U.esc(t.bsp)];
+          }));
+
+      /* "stand" trennt, was schon gilt (gruen), von dem, was noch
+         kommt (gelb) – und ist damit vom heutigen Datum abhaengig.
+         Wer die Datei spaeter liest, muss das nachziehen. */
+      case 'kizeitschiene':
+        return tabelle(['Datum', 'Was gilt', 'Hinweis'],
+          waehle(D.kizeitschiene).map(function (z) {
+            return ['<span class="tag tag--' + z.stand + '">' + U.esc(z.datum) + '</span>',
+                    '<b>' + U.esc(z.was) + '</b>', U.esc(z.hinweis)];
+          }));
+
+      case 'kisanktionen':
+        return tabelle(['Verstoß', 'Bußgeldrahmen', 'Beispiel'],
+          waehle(D.kisanktionen).map(function (s) {
+            return ['<b>' + U.esc(s.verstoss) + '</b>',
+                    '<span class="tag tag--' + s.stufe + '">' + U.esc(s.rahmen) + '</span>',
+                    U.esc(s.bsp)];
+          }));
+
       default:
         return schritt.html || '';
     }

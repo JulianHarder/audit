@@ -19,10 +19,9 @@ eigenen Dateien unter `data/`, getrennt vom Programm. Weitere Themengebiete
 kommen als zusätzliche Dateien dazu. Den Anfang macht **Datenschutz,
 Informationssicherheit und Compliance** (Fachinformatiker, Modul IV,
 IHK-Prüfung). Dazugekommen sind **Verschlüsselung und Kryptographie**,
-**Netzwerktechnik**, **Cookies, Tracking und ePrivacy** sowie
-**Penetrationstest, Softwaretest und Audit**. Ein weiteres Gebiet ist
-angelegt, aber noch ohne Gespräche – es erscheint in der Übersicht als
-„bald".
+**Netzwerktechnik**, **Cookies, Tracking und ePrivacy**,
+**Penetrationstest, Softwaretest und Audit** sowie **KI im Betrieb und der
+EU AI Act**.
 
 | Themengebiet | Gesprächspartner | Gespräche |
 |---|---|---|
@@ -30,7 +29,7 @@ angelegt, aber noch ohne Gespräche – es erscheint in der Übersicht als
 | Verschlüsselung und Kryptographie | 5 | 21 |
 | Netzwerktechnik | 5 | 37 |
 | Cookies, Tracking und ePrivacy | 5 | 23 |
-| KI im Betrieb und der EU AI Act | 5 | – (bald) |
+| KI im Betrieb und der EU AI Act | 5 | 26 |
 | Penetrationstest, Softwaretest und Audit | 6 | 27 |
 
 Eine Sache pro Bildschirm. Kein Drag & Drop, kein Zoom, keine Einarbeitung.
@@ -132,9 +131,26 @@ das Kernstück des Gebiets.
 
 ### Themengebiet „KI im Betrieb und der EU AI Act"
 
-Das Gebiet ist in `data/themen.js` und `data/kontakte.js` angelegt, die
-Gespräche fehlen noch. Es erscheint in der Übersicht als „bald" und lässt
-sich noch nicht öffnen.
+| Kontakt | Anrede | Ton | Themen | Gespräche |
+|---|---|---|---|---|
+| **Herr Azizi** | siezt dich | förmlich und geordnet, sortiert erst die Risikoklasse, dann die Pflichten | Risikobasierter Ansatz, verbotene Praktiken (Art. 5), Hochrisiko und Anhang III, Anbieter/Betreiber und Art. 25, Zeitschiene, Bußgeldrahmen | 6 |
+| **Hendrik Vollmer** | duzt dich | redet in Lösungen, technisch sicher, bei Pflichten offen unsicher | Transparenzpflicht beim Chatbot, Haftung für Halluzinationen, Feinabstimmung und Rollenwechsel, Zweckänderung zur Leistungsüberwachung, Kennzeichnung erzeugter Inhalte, Übersicht der KI-Einsätze | 6 |
+| **Frau Grünwald** | siezt dich | sachlich und knapp, fragt nicht nach dem Praktischen, sondern nach dem Zulässigen | Bewerberauswahl als Hochrisiko, Art. 22 DSGVO, menschliche Aufsicht und Bias, Information und Mitbestimmung, Auskunft und Löschung nach der Absage | 5 |
+| **Noah** | duzt dich | 2. Lehrjahr, Kleinschreibung und Emojis, benutzt KI längst für alles | KI-Kompetenz und Positivliste, Datenabfluss über Prompts, Halluzinationen und Prüfpflicht, Geschäftsgeheimnis und Urheberrecht, Prompt Injection | 5 |
+| **#ki-vorfall** | Gruppenchat | mehrere Sprecher, farblich getrennt | Kundendaten im Chatbot als Datenpanne, Deepfake-Anruf und CEO-Fraud, Schatten-KI, was aus den Vorfällen folgt | 4 |
+
+Zusammen **26 Gespräche** mit **106 Entscheidungen**. Das Gebiet trennt
+durchgehend **zwei Regelwerke**: Die KI-Verordnung fragt „welche
+Risikoklasse?", die DSGVO fragt „welche Rechtsgrundlage?" – beide Prüfungen
+sind nebeneinander zu durchlaufen. Zweiter roter Faden ist der Unterschied
+zwischen **Anbieter und Betreiber** samt den drei Auslösern des
+Rollenwechsels. Bei Noah **erklärst du**, bei Herrn Azizi **arbeitest du
+einen Fall durch**, bei Frau Grünwald **entscheidest und begründest du**.
+
+Rechtsstand: Verordnung (EU) 2024/1689 (KI-VO) in der Fassung der
+Digital-Omnibus-Verordnung (EU) 2026/1744, die die Hochrisiko-Fristen
+verschoben hat. Die Zeitschiene ist dadurch beweglich – siehe `NOTIZEN.md`,
+Abschnitt „Fachlich gegenprüfen".
 
 Jede Person hat eine eigene Sprechweise – das ist Absicht: Bei Tim und Jonas
 **erklärst du**, bei Frau Hagedorn und Frau Teichmann **entscheidest und
@@ -238,6 +254,11 @@ audit/
 │   ├── dialoge-marketing.js    Web: Analyse, Newsletter, Retargeting, Quote
 │   ├── dialoge-merle.js        Web: Grundbegriffe (du erklärst)
 │   ├── dialoge-banneralarm.js  Web: Gruppenchat mit vier Beanstandungen
+│   ├── dialoge-kirecht.js      KI: Risikoklassen, Verbote, Rollen, Fristen
+│   ├── dialoge-kiprojekt.js    KI: Transparenz, Halluzinationen, Art. 25
+│   ├── dialoge-personal.js     KI: Bewerberauswahl, Art. 22 DSGVO, Aufsicht
+│   ├── dialoge-noah.js         KI: Grundregeln im Alltag (du erklärst)
+│   ├── dialoge-kivorfall.js    KI: Gruppenchat mit drei Vorfällen
 │   ├── dialoge-pentest.js      Tests: Informationsstand, Phasen, Scope, Scan
 │   ├── dialoge-entwickler.js   Tests: Testentwurf, Abdeckung, Teststufen
 │   ├── dialoge-auditor.js      Tests: Audit, ISMS, Nachweise, Zertifizierung
@@ -253,6 +274,9 @@ audit/
 │   ├── lexikon-tests.js        Kurzdefinitionen zum Themengebiet tests;
 │   │                           erweitert am Ende das gebiet geteilter
 │   │                           Begriffe aus lexikon.js um 'tests'
+│   ├── lexikon-ki.js           Kurzdefinitionen zum Themengebiet ki;
+│   │                           erweitert am Ende das gebiet geteilter
+│   │                           Begriffe aus lexikon.js um 'ki'
 │   ├── kryptoverfahren.js      Tabellen: symmetrisch, asymmetrisch,
 │   │                           hybrid, Hashverfahren
 │   ├── netzwerk.js             Tabellen: OSI-Schichten, Geräte, Protokolle
@@ -265,6 +289,10 @@ audit/
 │   ├── pruefverfahren.js       Tabellen: Box-Verfahren im Vergleich,
 │   │                           Pentest-Phasen, Testentwurfsverfahren,
 │   │                           Teststufen
+│   ├── ki.js                   Tabellen: Risikoklassen, verbotene
+│   │                           Praktiken, Rollen, Betreiberpflichten,
+│   │                           Transparenzpflichten, Zeitschiene,
+│   │                           Bußgeldrahmen
 │   ├── schadsoftware.js        \
 │   ├── massnahmen.js            |  Nachschlagewerke: liefern die
 │   ├── dsgvo.js                 |  Übersichtstabellen, die mitten

@@ -284,7 +284,7 @@ AUDIT.data.lexikon = [
   { key: 'Verarbeitung', gruppe: 'DSGVO – Grundlagen',
     text: 'Jeder Vorgang im Zusammenhang mit personenbezogenen Daten: Erheben, Speichern, Verändern, Auslesen, Übermitteln, Löschen – auch ohne Computer.',
     norm: 'Art. 4 Nr. 2 DSGVO' },
-  { key: 'Verantwortlicher', gruppe: 'DSGVO – Grundlagen',
+  { key: 'Verantwortlicher', gruppe: 'DSGVO – Grundlagen', alias: ['Verantwortliche'],
     text: 'Wer über Zwecke und Mittel der Verarbeitung entscheidet – in der Regel das Unternehmen, vertreten durch die Geschäftsführung. Er haftet gegenüber den Betroffenen und der Aufsichtsbehörde.',
     norm: 'Art. 4 Nr. 7 DSGVO',
     merk: 'Der [[Datenschutzbeauftragter|DSB]] berät und überwacht – verantwortlich bleibt die Leitung.' },
